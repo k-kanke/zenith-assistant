@@ -23,5 +23,8 @@ func SetupRoutes() *gin.Engine {
 
 	r.POST("/chat", controllers.ChatHandler)
 
+	r.GET("/auth/google/login", controllers.GoogleLogin)
+	r.GET("/auth/google/callback", controllers.GoogleCallback)
+
 	return r
 }
