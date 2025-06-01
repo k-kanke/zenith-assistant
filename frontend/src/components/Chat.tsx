@@ -63,8 +63,12 @@ const Chat: React.FC = () => {
                     if (events.length === 0) {
                         setReply("予定が見つかりませんでした")
                     } else {
-                        const summaries = events.map((e: any) => `${e.summary}（${e.start?.dateTime || e.start?.date}）`)
-                        setReply(`予定: \n${summaries.join('\n')}`);
+                        const summaries = events.map((e: any) => {
+                            const start = new Date(e.start?.dateTime || e.start?.date);
+                            const timeStr = start.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+                            return `・${e.summary}（${timeStr}〜）`;
+                        });
+                        setReply(`${events.length}件の予定があります:\n${summaries.join('\n')}`);
                     }
                 } else {
                     setReply(`${data.message}`);
