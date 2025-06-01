@@ -12,8 +12,8 @@ func SetupRoutes() *gin.Engine {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST"},
-		AllowHeaders:     []string{"Content-Type"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
 
@@ -25,6 +25,10 @@ func SetupRoutes() *gin.Engine {
 
 	r.GET("/auth/google/login", controllers.GoogleLogin)
 	r.GET("/auth/google/callback", controllers.GoogleCallback)
+
+	r.GET("/calendar/events", controllers.GetEvents)
+
+	r.POST("/chat/schedule", controllers.HandleScheduleChat)
 
 	return r
 }

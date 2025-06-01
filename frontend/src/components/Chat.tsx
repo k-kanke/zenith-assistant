@@ -8,16 +8,23 @@ const Chat: React.FC = () => {
         if (!message.trim()) return;
 
         try {
-            const res = await fetch('http://localhost:8080/chat', {
+            const res = await fetch('http://localhost:8080/chat/schedule', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({ message }),
             });
 
             const data = await res.json();
-            setReply(data.reply);
+
+            if (res.ok) {
+                setReply(`${data.message}`);        
+            } else {
+                setReply(`${data.error}`);
+            }
+        
         } catch (err) {
             console.error('送信エラー: ', err);
             setReply('エラーが発生しました');
@@ -31,7 +38,7 @@ const Chat: React.FC = () => {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="メッセージを入力"
+                placeholder="メッセージを入力 (例：6月5日の10時から11時でMTG）"
                 style={{ padding: '0.5rem', width: '300px' }}
             />
             <button onClick={handleSend} style={{ marginLeft: '1rem' }}>

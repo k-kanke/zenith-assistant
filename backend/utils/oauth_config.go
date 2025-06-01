@@ -13,7 +13,7 @@ func GetGoogleOAuthConfig() *oauth2.Config {
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
 	redirectURL := os.Getenv("GOOGLE_REDIRECT_URL")
 
-	log.Println("[GetGoogleOAuthConfig] client_id:", clientID) // ← 念のため確認
+	log.Println("[GetGoogleOAuthConfig] client_id:", clientID)
 
 	return &oauth2.Config{
 		ClientID:     clientID,

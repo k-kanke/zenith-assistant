@@ -49,9 +49,12 @@ func GoogleCallback(c *gin.Context) {
 		return
 	}
 
+	// Cookieに保存
+	c.SetCookie("access_token", token.AccessToken, 3600, "/", "localhost", false, true)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ログイン成功",
 		"email":   userinfo.Email,
-		"token":   token,
+		"token":   token.AccessToken,
 	})
 }
