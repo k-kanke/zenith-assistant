@@ -88,8 +88,33 @@ const Chat: React.FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: 100 }}>
-            <h1 style={{ textAlign: 'center' }}>Zenith</h1>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100vh',
+            padding: 50
+        }}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                borderBottom: '1px solid #eee',
+            }}>
+                <h1 style={{ textAlign: 'center' }}>Zenith</h1>
+                <button
+                    onClick={() => setMessages([])}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#888',
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                    }}
+                >
+                    リセット
+                </button>
+            </div>
 
             {!loggedIn ? (
                 <div style={{ textAlign: 'center', marginTop: '2rem' }}>
