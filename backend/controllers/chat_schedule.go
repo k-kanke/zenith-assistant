@@ -14,7 +14,6 @@ import (
 )
 
 func HandleScheduleChat(c *gin.Context) {
-	log.Println("aaaaaaaaa")
 	var req struct {
 		Message string `json:"message"`
 	}
@@ -26,7 +25,7 @@ func HandleScheduleChat(c *gin.Context) {
 
 	log.Println("[DEBUG] メッセージ内容:", req.Message)
 
-	// 🔽 Cookieからアクセストークン取得
+	// Cookieからアクセストークン取得
 	accessToken, err := c.Cookie("access_token")
 	if err != nil || accessToken == "" {
 		log.Println("[ERROR] Cookieからaccess_token取得失敗:", err)
@@ -39,7 +38,7 @@ func HandleScheduleChat(c *gin.Context) {
 		TokenType:   "Bearer",
 	}
 
-	// 🔍 例：「6月5日の10時から11時でMTG」
+	// 例：「6月5日の10時から11時でMTG」
 	title, start, end, err := parseMessageSimple(req.Message)
 	if err != nil {
 		log.Println("[ERROR] メッセージ解析に失敗:", err)
@@ -63,7 +62,7 @@ func parseMessageSimple(msg string) (title string, start, end time.Time, err err
 	log.Println("[DEBUG] メッセージ内容:", msg)
 
 	// 正規表現で抽出(追々AIを組み込んで柔軟に対応する)
-	re := regexp.MustCompile(`(?P<month>\d{1,2})月(?P<day>\d{1,2})日の(?P<startHour>\d{1,2})時から(?P<endHour>\d{1,2})時(?:まで)?(?P<title>.+)`)
+	re := regexp.MustCompile(`(?P<month>\d{1,2})月(?P<day>\d{1,2})日の(?P<startHour>\d{1,2})時から(?P<endHour>\d{1,2})時(?:まで)?で(?P<title>.+)`)
 	matches := re.FindStringSubmatch(msg)
 
 	if len(matches) < 6 {

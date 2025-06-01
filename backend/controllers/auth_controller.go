@@ -43,7 +43,7 @@ func GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	userinfo, err := service.Userinfo.Get().Do()
+	_, err = service.Userinfo.Get().Do()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Get user info failed"})
 		return
@@ -51,10 +51,14 @@ func GoogleCallback(c *gin.Context) {
 
 	// Cookieに保存
 	c.SetCookie("access_token", token.AccessToken, 3600, "/", "localhost", false, true)
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000")
+}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "ログイン成功",
-		"email":   userinfo.Email,
-		"token":   token.AccessToken,
-	})
+func CheckLogin(c *gin.Context) {
+	_, err := c.Cookie("access_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"loggedIn": false})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"loggedIn": true})
 }

@@ -30,5 +30,7 @@ func SetupRoutes() *gin.Engine {
 
 	r.POST("/chat/schedule", controllers.HandleScheduleChat)
 
+	r.GET("/auth/check", controllers.CheckLogin)
+
 	return r
 }
