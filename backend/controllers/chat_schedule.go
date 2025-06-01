@@ -13,7 +13,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func HandleScheduleChat(c *gin.Context) {
+func CreateEvent(c *gin.Context) {
 	var req struct {
 		Message string `json:"message"`
 	}

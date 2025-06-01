@@ -33,7 +33,7 @@ const Chat: React.FC = () => {
         if (!message.trim()) return;
 
         try {
-            const res = await fetch('http://localhost:8080/chat/schedule', {
+            const res = await fetch('http://localhost:8080/calendar/events/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
