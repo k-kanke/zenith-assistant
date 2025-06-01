@@ -13,6 +13,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// 予定を登録
 func CreateEvent(c *gin.Context) {
 	var req struct {
 		Message string `json:"message"`

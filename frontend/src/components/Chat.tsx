@@ -32,8 +32,17 @@ const Chat: React.FC = () => {
     const handleSend = async () => {
         if (!message.trim()) return;
 
+        // AI組み込むまでの簡易的なルールベース判定
+        const isGetEvent = message.includes("予定") && !message.includes("で");
+
+        const endpoint = isGetEvent
+            ? 'http://localhost:8080/calendar/events'
+            : 'http://localhost:8080/calendar/events/create';
+
+        console.log("[aaa]", endpoint) // デバッグ用(あとで消す)
+
         try {
-            const res = await fetch('http://localhost:8080/calendar/events/create', {
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,10 +51,24 @@ const Chat: React.FC = () => {
                 body: JSON.stringify({ message }),
             });
 
-            const data = await res.json();
+            // const data = await res.json();
+            const rawText = await res.text();
+            console.log("[DEBUG] Raw Response:", rawText);
+
+            const data = JSON.parse(rawText);
 
             if (res.ok) {
-                setReply(`${data.message}`);        
+                if (isGetEvent) {
+                    const events = data.events || [];
+                    if (events.length === 0) {
+                        setReply("予定が見つかりませんでした")
+                    } else {
+                        const summaries = events.map((e: any) => `${e.summary}（${e.start?.dateTime || e.start?.date}）`)
+                        setReply(`予定: \n${summaries.join('\n')}`);
+                    }
+                } else {
+                    setReply(`${data.message}`);
+                }       
             } else {
                 setReply(`${data.error}`);
             }

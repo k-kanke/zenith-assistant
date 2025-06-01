@@ -10,19 +10,10 @@ import (
 	"google.golang.org/api/option"
 )
 
-// トークンを受け取り、イベント一覧を取得する
-func GetCalendarEvents(_ *oauth2.Token, start, end string) ([]*calendar.Event, error) {
+// 指定された期間のGoogleカレンダーイベントを取得する
+func GetCalendarEvents(token *oauth2.Token, start, end time.Time) ([]*calendar.Event, error) {
 	ctx := context.Background()
 	config := utils.GetGoogleOAuthConfig()
-
-	// あとで保存先から取得
-	accessToken := ""
-
-	token := &oauth2.Token{
-		AccessToken: accessToken,
-		TokenType:   "Bearer",
-	}
-
 	client := config.Client(ctx, token)
 
 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
@@ -33,11 +24,10 @@ func GetCalendarEvents(_ *oauth2.Token, start, end string) ([]*calendar.Event, e
 	events, err := srv.Events.List("primary").
 		ShowDeleted(false).
 		SingleEvents(true).
-		TimeMin(start).
-		TimeMax(end).
+		TimeMin(start.Format(time.RFC3339)).
+		TimeMax(end.Format(time.RFC3339)).
 		OrderBy("startTime").
 		Do()
-
 	if err != nil {
 		return nil, err
 	}

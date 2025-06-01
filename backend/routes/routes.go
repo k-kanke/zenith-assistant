@@ -33,7 +33,7 @@ func SetupRoutes() *gin.Engine {
 	// カレンダーAPI
 	calendar := r.Group("/calendar")
 	{
-		calendar.GET("/events", controllers.GetEvents)           // 指定した日時の予定を取得
+		calendar.POST("/events", controllers.GetEvents)          // 指定した日時の予定を取得
 		calendar.POST("/events/create", controllers.CreateEvent) // 予定の新規登録
 	}
 
