@@ -41,6 +41,7 @@ func SetupRoutes() *gin.Engine {
 	tasks := r.Group("/tasks")
 	{
 		tasks.POST("/create", controllers.CreateTaskHandler)
+		tasks.POST("/upcoming", controllers.GetUpcomingTasksHandler)
 	}
 
 	return r

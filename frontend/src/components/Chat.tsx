@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import TaskCard from "./TaskCard";
 
 const Chat: React.FC = () => {
     const [message, setMessage] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
+    const [tasks, setTasks] = useState<any[]>([]);
 
     // Cookie内のアクセストークン確認
     useEffect(() => {
@@ -38,13 +40,16 @@ const Chat: React.FC = () => {
 
         // AI組み込むまでの簡易的なルールベース判定
         const isGetEvent = message.includes("予定") && !message.includes("で");
-        const isCreateTask = message.includes("タスク") && message.includes("追加")
+        const isCreateTask = message.includes("タスク") && message.includes("追加");
+        const isGetTask = message.includes("タスク") && message.includes("教えて");
 
         let endpoint = "";
         if (isGetEvent) {
             endpoint = 'http://localhost:8080/calendar/events';
         } else if (isCreateTask) {
             endpoint = 'http://localhost:8080/tasks/create';
+        } else if (isGetTask) {
+            endpoint = 'http://localhost:8080/tasks/upcoming';
         } else {
             endpoint = 'http://localhost:8080/calendar/events/create';
         }
@@ -60,6 +65,7 @@ const Chat: React.FC = () => {
             });
 
             const rawText = await res.text();
+            // console.log("[rawText]: ", rawText)
             const data = JSON.parse(rawText);
 
             let botReply = '';
@@ -84,6 +90,16 @@ const Chat: React.FC = () => {
                 }
             } else {
                 botReply = data.error || 'エラーが発生しました';
+            }
+
+            if (isGetTask) {
+                const taskList = data.tasks || [];
+                setTasks(taskList);
+                if (taskList.length === 0) {
+                    botReply = "タスクはありません";
+                } else {
+                    botReply = `${taskList.length}件のタスクがあります。`;
+                }
             }
 
             setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
@@ -157,6 +173,20 @@ const Chat: React.FC = () => {
                             送信
                         </button>
                     </div>
+
+                    {tasks.length > 0 && (
+                        <div>
+                            <h3>タスク一覧</h3>
+                            {tasks.map((task, i) => (
+                                <TaskCard
+                                    key={i}
+                                    title={task.title}
+                                    status={task.status}
+                                    due={task.dueDate}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </>
             )}
         </div>

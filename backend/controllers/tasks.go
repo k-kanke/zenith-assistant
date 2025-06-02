@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// タスク作成
 func CreateTaskHandler(c *gin.Context) {
 	var req struct {
 		Message string `json:"message"`
@@ -26,4 +27,16 @@ func CreateTaskHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "タスクを追加しました", "title": title})
+}
+
+// タスク取得
+func GetUpcomingTasksHandler(c *gin.Context) {
+	// log.Println("aaaaaa")
+	tasks, err := services.GetUpcomingTasks(context.Background())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "タスクの取得に失敗しました"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
 }
