@@ -2,10 +2,19 @@ package main
 
 import (
 	"github/k-kanke/backend/routes"
+	"github/k-kanke/backend/services"
+	"log"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	r := routes.SetupRoutes()
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env ファイルが読み込めませんでした")
+	}
 
+	services.InitFirestore()
+	r := routes.SetupRoutes()
 	r.Run(":8080")
 }

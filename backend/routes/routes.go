@@ -37,7 +37,11 @@ func SetupRoutes() *gin.Engine {
 		calendar.POST("/events/create", controllers.CreateEvent) // 予定の新規登録
 	}
 
-	// r.POST("/chat/schedule", controllers.HandleScheduleChat)
+	// タスクAPI
+	tasks := r.Group("/tasks")
+	{
+		tasks.POST("/create", controllers.CreateTaskHandler)
+	}
 
 	return r
 }
