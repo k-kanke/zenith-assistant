@@ -166,7 +166,7 @@ const Chat: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
-            padding: 50
+            padding: '20px',
         }}>
             <div style={{
                 display: 'flex',
@@ -199,7 +199,12 @@ const Chat: React.FC = () => {
                 </div>
             ): (
                 <>
-                    <div>
+                    <div style={{
+                        flex: 1, 
+                        overflowY: 'auto',
+                        padding: '1rem',
+                        paddingBottom: '70px',
+                    }}>
                         {messages.map((m, i) => (
                             <div key={i} style={{
                                 textAlign: m.role === 'user' ? 'right' : 'left',
@@ -211,7 +216,18 @@ const Chat: React.FC = () => {
                         ))}
                     </div>
 
-                    <div>
+                    <div style={{
+                        position: 'fixed',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '1rem 2rem',
+                        backgroundColor: '#fff',
+                        borderTop: '1px solid #ccc',
+                        display: 'flex',
+                        alignItems: 'center',
+                        zIndex: 10,
+                    }}>
                         <input 
                             type="text"
                             value={message}
