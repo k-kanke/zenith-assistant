@@ -38,11 +38,16 @@ const Chat: React.FC = () => {
 
         // AI組み込むまでの簡易的なルールベース判定
         const isGetEvent = message.includes("予定") && !message.includes("で");
+        const isCreateTask = message.includes("タスク") && message.includes("追加")
 
-        const endpoint = isGetEvent
-            ? 'http://localhost:8080/calendar/events'
-            : 'http://localhost:8080/calendar/events/create';
-
+        let endpoint = "";
+        if (isGetEvent) {
+            endpoint = 'http://localhost:8080/calendar/events';
+        } else if (isCreateTask) {
+            endpoint = 'http://localhost:8080/tasks/create';
+        } else {
+            endpoint = 'http://localhost:8080/calendar/events/create';
+        }
 
         try {
             const res = await fetch(endpoint, {
@@ -72,9 +77,11 @@ const Chat: React.FC = () => {
                         });
                         botReply = `${events.length}件の予定があります:\n${summaries.join('\n')}`;
                     }
+                } else if (isCreateTask) {
+                    botReply = data.message || "タスクを登録しました";
                 } else {
                     botReply = data.message;
-                }       
+                }
             } else {
                 botReply = data.error || 'エラーが発生しました';
             }
