@@ -5,7 +5,7 @@ const Chat: React.FC = () => {
     const [message, setMessage] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
-    const [tasks, setTasks] = useState<any[]>([]);
+    // const [tasks, setTasks] = useState<any[]>([]);
 
     // Cookie内のアクセストークン確認
     useEffect(() => {
@@ -94,11 +94,18 @@ const Chat: React.FC = () => {
 
             if (isGetTask) {
                 const taskList = data.tasks || [];
-                setTasks(taskList);
                 if (taskList.length === 0) {
                     botReply = "タスクはありません";
                 } else {
-                    botReply = `${taskList.length}件のタスクがあります。`;
+                    const summaries = taskList.map((task: any) => {
+                        const due = task.dueDate
+                            ? new Date(task.dueDate).toLocaleString('ja-JP', {
+                                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                            })
+                            : "期限なし";
+                        return `・${task.title}（${due}）`;
+                    });
+                    botReply = `${taskList.length}件のタスクがあります:\n${summaries.join('\n')}`;
                 }
             }
 
@@ -177,20 +184,6 @@ const Chat: React.FC = () => {
                             送信
                         </button>
                     </div>
-
-                    {tasks.length > 0 && (
-                        <div>
-                            <h3>タスク一覧</h3>
-                            {tasks.map((task, i) => (
-                                <TaskCard
-                                    key={i}
-                                    title={task.title}
-                                    status={task.status}
-                                    due={task.dueDate}
-                                />
-                            ))}
-                        </div>
-                    )}
                 </>
             )}
         </div>
