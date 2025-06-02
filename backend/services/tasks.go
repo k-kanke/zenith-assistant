@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"
 )
 
@@ -68,4 +69,29 @@ func GetUpcomingTasks(ctx context.Context) ([]Task, error) {
 	// log.Println("task: ", tasks)
 
 	return tasks, nil
+}
+
+// タスクを完了に
+func CompleteTask(ctx context.Context, title string) error {
+	app := GetFirestoreClient()
+	client, err := app.Firestore(ctx)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	iter := client.Collection("tasks").
+		Where("Title", "==", title).
+		Where("Status", "==", "pending").
+		Limit(1).Documents(ctx)
+
+	doc, err := iter.Next()
+	if err != nil {
+		return err
+	}
+
+	_, err = doc.Ref.Update(ctx, []firestore.Update{
+		{Path: "Status", Value: "completed"},
+	})
+	return err
 }

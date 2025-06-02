@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import TaskCard from "./TaskCard";
 
+type Task = {
+    title: string;
+    status: string;
+    dueDate?: string;
+};
+
 const Chat: React.FC = () => {
     const [message, setMessage] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
-    // const [tasks, setTasks] = useState<any[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     // Cookie内のアクセストークン確認
     useEffect(() => {
@@ -43,6 +49,9 @@ const Chat: React.FC = () => {
         const isCreateTask = message.includes("タスク") && message.includes("追加");
         const isGetTask = message.includes("タスク") && message.includes("教えて");
 
+        const isCompleteTask = /^\d+\s*完了$/.test(message.trim());
+
+
         let endpoint = "";
         if (isGetEvent) {
             endpoint = 'http://localhost:8080/calendar/events';
@@ -50,6 +59,37 @@ const Chat: React.FC = () => {
             endpoint = 'http://localhost:8080/tasks/create';
         } else if (isGetTask) {
             endpoint = 'http://localhost:8080/tasks/upcoming';
+        } else if (isCompleteTask) {
+            const match = message.trim().match(/^(\d+)\s*完了$/);
+            const idx = match ? parseInt(match[1], 10) - 1 : -1;
+
+            if (idx >= 0 && idx < tasks.length) {
+                const target = tasks[idx];
+                endpoint = 'http://localhost:8080/tasks/complete';
+
+                try {
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ message: `${idx + 1}完了` }),
+                    });
+                    const data = await res.json();
+                    const msg = data.message || 'タスクを完了しました';
+                    setMessages(prev => [...prev, { role: 'bot', text: msg }]);
+                    setTasks(prev => prev.filter((_, i) => i !== idx)); // タスクをリストから除外
+                    return;
+                } catch (err) {
+                    console.error(err);
+                    setMessages(prev => [...prev, { role: 'bot', text: '完了処理に失敗しました' }]);
+                    return;
+                }
+            } else {
+                setMessages(prev => [...prev, { role: 'bot', text: '該当する番号のタスクが見つかりません' }]);
+                return;
+            }
         } else {
             endpoint = 'http://localhost:8080/calendar/events/create';
         }
@@ -85,6 +125,8 @@ const Chat: React.FC = () => {
                     }
                 } else if (isCreateTask) {
                     botReply = data.message || "タスクを登録しました";
+                } else if (isCompleteTask) {
+                    botReply = data.message || "完了しました";
                 } else {
                     botReply = data.message;
                 }
@@ -94,20 +136,22 @@ const Chat: React.FC = () => {
 
             if (isGetTask) {
                 const taskList = data.tasks || [];
+                setTasks(taskList);
+
                 if (taskList.length === 0) {
                     botReply = "タスクはありません";
                 } else {
-                    const summaries = taskList.map((task: any) => {
+                    const lines = taskList.map((task: Task, idx: string) => {
                         const due = task.dueDate
-                            ? new Date(task.dueDate).toLocaleString('ja-JP', {
-                                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                            })
-                            : "期限なし";
-                        return `・${task.title}（${due}）`;
+                            ? new Date(task.dueDate).toLocaleString('ja-JP', { dateStyle: 'short', timeStyle: 'short' })
+                            : '期限未設定';
+                        return `${idx + 1}. ${task.title}（期限: ${due}）`;
                     });
-                    botReply = `${taskList.length}件のタスクがあります:\n${summaries.join('\n')}`;
+                    botReply = `現在のタスクは以下の通りです:\n${lines.join('\n')}`;
                 }
             }
+
+            
 
             setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
         

@@ -42,6 +42,7 @@ func SetupRoutes() *gin.Engine {
 	{
 		tasks.POST("/create", controllers.CreateTaskHandler)
 		tasks.POST("/upcoming", controllers.GetUpcomingTasksHandler)
+		tasks.POST("/complete", controllers.CompleteTaskHandler)
 	}
 
 	return r
