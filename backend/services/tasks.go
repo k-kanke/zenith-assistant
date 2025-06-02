@@ -2,14 +2,17 @@ package services
 
 import (
 	"context"
+	"log"
 	"time"
+
+	"google.golang.org/api/iterator"
 )
 
 type Task struct {
 	Title     string    `json:"title"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"createdAt"`
-	DueDate   time.Time `json:"dueDate,omitempty"`
+	DueDate   time.Time `json:"dueDate"`
 }
 
 // タスクを作成
@@ -40,19 +43,26 @@ func GetUpcomingTasks(ctx context.Context) ([]Task, error) {
 	defer client.Close()
 
 	iter := client.Collection("tasks").
-		Where("status", "==", "pending").
+		Where("Status", "==", "pending").
 		Documents(ctx)
 
 	var tasks []Task
 	for {
 		doc, err := iter.Next()
-		if err != nil {
+		if err == iterator.Done {
 			break
 		}
-		var task Task
-		if err := doc.DataTo(&task); err == nil {
-			tasks = append(tasks, task)
+		if err != nil {
+			log.Printf("iter.Next() エラー: %v", err)
+			continue
 		}
+
+		var task Task
+		if err := doc.DataTo(&task); err != nil {
+			log.Printf("DataTo失敗: %v", err)
+			continue
+		}
+		tasks = append(tasks, task)
 	}
 
 	// log.Println("task: ", tasks)

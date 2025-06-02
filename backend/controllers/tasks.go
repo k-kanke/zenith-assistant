@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"github/k-kanke/backend/services"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,11 +33,14 @@ func CreateTaskHandler(c *gin.Context) {
 // タスク取得
 func GetUpcomingTasksHandler(c *gin.Context) {
 	// log.Println("aaaaaa")
+	log.Println("[GET TASKS] called")
 	tasks, err := services.GetUpcomingTasks(context.Background())
 	if err != nil {
+		log.Printf("[GET TASKS] エラー: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "タスクの取得に失敗しました"})
 		return
 	}
 
+	log.Printf("[GET TASKS] 取得件数: %d", len(tasks))
 	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
 }

@@ -165,7 +165,11 @@ const Chat: React.FC = () => {
                             type="text"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
+                            onKeyDown={(e) => { 
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                }
+                            }}
                             placeholder="メッセージを入力"
                             style={{ padding: '0.5rem', flex: 1, marginRight: '1rem' }}
                         />
