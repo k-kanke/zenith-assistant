@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
             <ScheduleDetailPage />
           </div>
           <div className="right-panel">
-            <Chat />
+            <Chat loggedIn={loggedIn} />
           </div>
         </div>
     );

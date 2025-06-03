@@ -7,9 +7,12 @@ type Task = {
     dueDate?: string;
 };
 
-const Chat: React.FC = () => {
+type ChatProps = {
+    loggedIn: boolean;
+};
+
+const Chat: React.FC<ChatProps> = ({ loggedIn }) => {
     const [message, setMessage] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -169,30 +172,33 @@ const Chat: React.FC = () => {
                 <h1 style={{ textAlign: 'center' }}>Zenith</h1>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.8rem' }}>
-                    <button
-                        onClick={() => {}}
-                        style={{
-                            backgroundColor: '#000',     // 黒背景
-                            color: '#fff',               // 白文字
-                            border: 'none',
-                            borderRadius: '0.5rem',
-                            padding: '0.4rem 1rem',
-                            fontSize: '0.85rem',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                            transition: 'background-color 0.2s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#222';
-                        }}
-                        onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#000';
-                        }}
-                    >
-                        {/* ログインしていない時だけ表示するように後で変更 */}
-                        ログイン 
-                    </button>
+                    {!loggedIn && (
+                        <button
+                            onClick={() => {}}
+                            style={{
+                                backgroundColor: '#000',     // 黒背景
+                                color: '#fff',               // 白文字
+                                border: 'none',
+                                borderRadius: '0.5rem',
+                                padding: '0.4rem 1rem',
+                                fontSize: '0.85rem',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                                transition: 'background-color 0.2s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#222';
+                            }}
+                            onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#000';
+                            }}
+                        >
+                            {/* ログインしていない時だけ表示するように後で変更 */}
+                            ログイン 
+                        </button>
+                    )}
+
                     <button
                         onClick={() => setMessages([])}
                         style={{
@@ -250,12 +256,6 @@ const Chat: React.FC = () => {
                         ref={textareaRef}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSend();
-                          }
-                        }}
                         placeholder="メッセージを入力（Shift + Enterで改行）"
                         rows={1}
                         style={{
