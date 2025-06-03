@@ -152,8 +152,9 @@ const Chat: React.FC = () => {
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            height: '95vh',
-            overflow: 'hidden'
+            height: '92vh',
+            overflow: 'hidden',
+            padding: '10px'
         }}>
             {/* ヘッダー */}
             <div style={{
@@ -166,18 +167,45 @@ const Chat: React.FC = () => {
                 backgroundColor: '#fff',
             }}>
                 <h1 style={{ textAlign: 'center' }}>Zenith</h1>
-                <button
-                    onClick={() => setMessages([])}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#888',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                    }}
-                >
-                    リセット
-                </button>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.8rem' }}>
+                    <button
+                        onClick={() => {}}
+                        style={{
+                            backgroundColor: '#000',     // 黒背景
+                            color: '#fff',               // 白文字
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            padding: '0.4rem 1rem',
+                            fontSize: '0.85rem',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                            transition: 'background-color 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#222';
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#000';
+                        }}
+                    >
+                        {/* ログインしていない時だけ表示するように後で変更 */}
+                        ログイン 
+                    </button>
+                    <button
+                        onClick={() => setMessages([])}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#888',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        リセット
+                    </button>
+                </div>
             </div>
 
             {/* チャット欄（スクロール） */}
@@ -210,12 +238,12 @@ const Chat: React.FC = () => {
             }}>
                 <div style={{
                     flexShrink: 0,
-                    padding: '0.2rem 1rem',
+                    padding: '0.7rem 1rem',
                     backgroundColor: '#fff',
                     display: 'flex',
                     alignItems: 'flex-end',
                     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    borderRadius: '0.75rem',
+                    borderRadius: '0.5rem',
                     width: '60%',
                 }}>
                     <textarea
@@ -232,7 +260,7 @@ const Chat: React.FC = () => {
                         rows={1}
                         style={{
                           flex: 1,
-                          padding: '0.5rem',
+                          padding: '0.1rem',
                           border: 'none',
                           outline: 'none',
                           fontSize: '1rem',
@@ -250,7 +278,8 @@ const Chat: React.FC = () => {
                         borderRadius: '0.5rem',
                         padding: '0.5rem 1rem',
                         cursor: 'pointer',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
+                        alignSelf: 'flex-end', 
                     }}>
                         送信
                     </button>
@@ -271,7 +300,7 @@ const Chat: React.FC = () => {
                 cursor: 'pointer',
                 boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
             }}>
-                📖
+                🗒️
             </button>
 
             
