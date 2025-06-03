@@ -4,17 +4,23 @@ import (
 	"github/k-kanke/backend/routes"
 	"github/k-kanke/backend/services"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println(".env ファイルが読み込めませんでした")
+	if os.Getenv("ENV") != "production" {
+		if err := godotenv.Load(); err != nil {
+			log.Println("Failed to load .env file")
+		}
 	}
 
 	services.InitFirestore()
 	r := routes.SetupRoutes()
-	r.Run(":8080")
+	log.Println("Server running on :8080")
+	e := r.Run(":8080")
+	if e != nil {
+		log.Fatal("Failed to start setver:", e)
+	}
 }
