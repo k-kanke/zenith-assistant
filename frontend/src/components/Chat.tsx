@@ -13,30 +13,6 @@ const Chat: React.FC = () => {
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
 
-    // Cookie内のアクセストークン確認
-    useEffect(() => {
-        const checkLogin = async () => {
-            try {
-                const res = await fetch("http://localhost:8080/auth/check", {
-                    method: "GET",
-                    credentials: "include",
-                });
-                const data = await res.json();
-                setLoggedIn(data.loggedIn);
-            } catch (err) {
-                console.error("ログイン確認エラー", err);
-                setLoggedIn(false);
-            }
-        };
-    
-        checkLogin();
-    }, []);
-    
-
-    const handleLogin = () => {
-        window.location.href = "http://localhost:8080/auth/google/login";
-    };
-
     const handleSend = async () => {
         if (!message.trim()) return;
 
@@ -190,62 +166,51 @@ const Chat: React.FC = () => {
                 </button>
             </div>
 
-            {!loggedIn ? (
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                    <button onClick={handleLogin}>Googleアカウントでログイン</button>
-                    <button onClick={() => window.location.reload()} style={{ marginLeft: '1rem' }}>
-                        ログイン後に反映
-                    </button>
-                </div>
-            ): (
-                <>
-                    <div style={{
-                        flex: 1, 
-                        overflowY: 'auto',
-                        padding: '1rem',
-                        paddingBottom: '70px',
+            <div style={{
+                flex: 1, 
+                overflowY: 'auto',
+                padding: '1rem',
+                paddingBottom: '70px',
+            }}>
+                {messages.map((m, i) => (
+                    <div key={i} style={{
+                        textAlign: m.role === 'user' ? 'right' : 'left',
+                        marginBottom: '0.5rem',
                     }}>
-                        {messages.map((m, i) => (
-                            <div key={i} style={{
-                                textAlign: m.role === 'user' ? 'right' : 'left',
-                                marginBottom: '0.5rem',
-                            }}>
-                                <strong>{m.role === 'user' ? 'あなた' : 'Zenith'}:</strong>
-                                <div style={{ whiteSpace: 'pre-wrap' }}>{m.text}</div>
-                            </div>
-                        ))}
+                        <strong>{m.role === 'user' ? 'あなた' : 'Zenith'}:</strong>
+                        <div style={{ whiteSpace: 'pre-wrap' }}>{m.text}</div>
                     </div>
+                ))}
+            </div>
 
-                    <div style={{
-                        position: 'fixed',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        padding: '1rem 2rem',
-                        backgroundColor: '#fff',
-                        borderTop: '1px solid #ccc',
-                        display: 'flex',
-                        alignItems: 'center',
-                        zIndex: 10,
-                    }}>
-                        <input 
-                            type="text"
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => { 
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                }
-                            }}
-                            placeholder="メッセージを入力"
-                            style={{ padding: '0.5rem', flex: 1, marginRight: '1rem' }}
-                        />
-                        <button onClick={handleSend}>
-                            送信
-                        </button>
-                    </div>
-                </>
-            )}
+            <div style={{
+                // position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: '1rem 2rem',
+                backgroundColor: '#fff',
+                borderTop: '1px solid #ccc',
+                display: 'flex',
+                alignItems: 'center',
+                zIndex: 10,
+            }}>
+                <input 
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={(e) => { 
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                        }
+                    }}
+                    placeholder="メッセージを入力"
+                    style={{ padding: '0.5rem', flex: 1, marginRight: '1rem' }}
+                />
+                <button onClick={handleSend}>
+                    送信
+                </button>
+            </div>
         </div>
     );
 };
