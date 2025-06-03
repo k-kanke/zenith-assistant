@@ -30,7 +30,13 @@ func SetupRoutes() *gin.Engine {
 	r.GET("/auth/google/callback", controllers.GoogleCallback)
 	r.GET("/auth/check", controllers.CheckLogin)
 
-	// カレンダーAPI
+	// カレンダーAPI(DBからトークンを取得してそれを利用する方式)
+	calendardb := r.Group("/calendar/db")
+	{
+		calendardb.GET("/group/get", controllers.GetEventsByEmail) // emailからその人の予定を取得
+	}
+
+	// カレンダーAPI(Cookieからトークンを取得)
 	calendar := r.Group("/calendar")
 	{
 		calendar.POST("/events", controllers.GetEvents)          // 指定した日時の予定を取得
