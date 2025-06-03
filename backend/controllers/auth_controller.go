@@ -16,25 +16,20 @@ import (
 func GoogleLogin(c *gin.Context) {
 	config := utils.GetGoogleOAuthConfig()
 
-	url := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	url := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "consent"))
 	log.Println("[DEBUG] Redirecting to Google Auth URL:", url)
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 func GoogleCallback(c *gin.Context) {
-	log.Println("[aaaaaaaaaaaa]")
 	code := c.Query("code")
 	if code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Code not found"})
 		return
 	}
 
-	log.Println("[bbbbbbbbbbb]")
-
 	config := utils.GetGoogleOAuthConfig()
-
-	log.Println("[ccccccccccc]")
 
 	token, err := config.Exchange(context.Background(), code)
 	if err != nil {
@@ -45,7 +40,6 @@ func GoogleCallback(c *gin.Context) {
 
 	// Googleユーザー情報の取得
 	client := config.Client(context.Background(), token)
-	log.Println("[ddddddddddd]")
 	service, err := oauth2api.NewService(context.Background(), option.WithHTTPClient(client))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "OAuth2 service init failed"})

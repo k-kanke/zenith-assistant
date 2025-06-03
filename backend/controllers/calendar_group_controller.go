@@ -39,7 +39,7 @@ func GetEventsByEmail(c *gin.Context) {
 		}
 	}
 
-	token, err := services.GetTokenByEmail(email)
+	token, err := services.GetValidTokenByEmail(email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Token not found"})
 		return
