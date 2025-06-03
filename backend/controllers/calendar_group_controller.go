@@ -54,3 +54,30 @@ func GetEventsByEmail(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"events": events})
 }
+
+func CreateEventByEmail(c *gin.Context) {
+	var req struct {
+		Email string    `json:"email"`
+		Title string    `json:"title"`
+		Start time.Time `json:"start"`
+		End   time.Time `json:"end"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	token, err := services.GetValidTokenByEmail(req.Email)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found or expired"})
+		return
+	}
+
+	err = services.CreateCalendarEvent(token, req.Title, req.Start, req.End)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create event"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Event created successfully"})
+}
