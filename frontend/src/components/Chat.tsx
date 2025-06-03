@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TaskCard from "./TaskCard";
 
 type Task = {
@@ -137,19 +137,33 @@ const Chat: React.FC = () => {
         }
     };
 
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto'; 
+            const maxHeight = 8 * 24; 
+            textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+        }
+    }, [message]);
+
     return (
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            height: '100vh',
-            padding: '20px',
+            height: '95vh',
+            overflow: 'hidden'
         }}>
+            {/* ヘッダー */}
             <div style={{
+                flexShrink: 0,
+                padding: '0.5rem 2rem',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '0.5rem 1rem',
                 borderBottom: '1px solid #eee',
+                backgroundColor: '#fff',
             }}>
                 <h1 style={{ textAlign: 'center' }}>Zenith</h1>
                 <button
@@ -166,11 +180,13 @@ const Chat: React.FC = () => {
                 </button>
             </div>
 
+            {/* チャット欄（スクロール） */}
             <div style={{
                 flex: 1, 
                 overflowY: 'auto',
                 padding: '1rem',
-                paddingBottom: '70px',
+                // backgroundColor: '#f9f9f9',
+                position: 'relative',
             }}>
                 {messages.map((m, i) => (
                     <div key={i} style={{
@@ -183,34 +199,82 @@ const Chat: React.FC = () => {
                 ))}
             </div>
 
+            {/* チャット入力欄 */}
             <div style={{
-                // position: 'fixed',
+                position: 'sticky',
                 bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '1rem 2rem',
-                backgroundColor: '#fff',
-                borderTop: '1px solid #ccc',
+                width: '100%',
+                padding: '0.5rem',
                 display: 'flex',
-                alignItems: 'center',
-                zIndex: 10,
+                background: 'transparent', 
             }}>
-                <input 
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => { 
-                        if (e.key === 'Enter') {
+                <div style={{
+                    flexShrink: 0,
+                    padding: '0.2rem 1rem',
+                    backgroundColor: '#fff',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '0.75rem',
+                    width: '60%',
+                }}>
+                    <textarea
+                        ref={textareaRef}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                        }
-                    }}
-                    placeholder="メッセージを入力"
-                    style={{ padding: '0.5rem', flex: 1, marginRight: '1rem' }}
-                />
-                <button onClick={handleSend}>
-                    送信
-                </button>
+                            handleSend();
+                          }
+                        }}
+                        placeholder="メッセージを入力（Shift + Enterで改行）"
+                        rows={1}
+                        style={{
+                          flex: 1,
+                          padding: '0.5rem',
+                          border: 'none',
+                          outline: 'none',
+                          fontSize: '1rem',
+                          resize: 'none',
+                          overflow: 'auto',
+                            lineHeight: '24px',
+                            maxHeight: '192px',
+                        }}
+                    />
+                    <button onClick={handleSend}style={{
+                        marginLeft: '1rem',
+                        backgroundColor: '#000',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        padding: '0.5rem 1rem',
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}>
+                        送信
+                    </button>
+                </div>
             </div>
+
+            <button onClick={() => {}} style={{
+                position: 'fixed',
+                bottom: '3rem',
+                right: '3rem',
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: '#000',
+                color: '#fff',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            }}>
+                📖
+            </button>
+
+            
         </div>
     );
 };
