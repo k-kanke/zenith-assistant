@@ -295,8 +295,18 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
       {showPanel && (
         <SlideInRegisterPanel
           onClose={() => setShowPanel(false)}
-          onSubmit={(email, nickname, affiliation) => {
-            console.log({ email, nickname, affiliation });
+          onSubmit={async (email, nickname, affiliation) => {
+            try {
+                const res = await fetch("http://localhost:8080/user/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, nickname, affiliation }),
+                });
+                const data = await res.json();
+                console.log("登録成功:", data.message);
+            } catch (err) {
+                console.log("登録失敗", err)
+            }
           }}
         />
       )}

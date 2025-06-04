@@ -40,6 +40,12 @@ func SetupRoutes() *gin.Engine {
 		calendardb.POST("/parse", controllers.ParseScheduleIntent) // 予定登録の初期情報をクエリから抽出
 	}
 
+	// firestoreにユーザー情報保存
+	user := r.Group("/user")
+	{
+		user.POST("/register", controllers.RegisterUserHandler) // user情報をfirestoreに保存
+	}
+
 	// カレンダーAPI(Cookieからトークンを取得)
 	calendar := r.Group("/calendar")
 	{
