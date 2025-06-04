@@ -27,53 +27,57 @@ const ChatPage: React.FC<ChatProps> = ({ loggedIn }) => {
 
     let botReply = '';
 
-    // -------------------------------
-    // 空き時間リクエストの簡易判定
-    // -------------------------------
+    // 空き時間リクエストの処理
     const isFreeSlotRequest = message.includes("空き時間");
 
     if (isFreeSlotRequest) {
-      // ユーザーの入力から設定できるように（後々ここはAIで）
-      const emails = ["k2@gmail.com", "k1@gmail.com"];
-      const start = "2025-06-04T00:00:00+09:00";
-      const end = "2025-06-04T23:59:00+09:00";
+        // ユーザーの入力から設定できるように（後々ここはAIで）
+        const emailMatch = message.replace("空き時間", "").trim();
+        const emails = emailMatch.split(",").map(e => e.trim()).filter(e => e.includes("@"));
 
-      const query = new URLSearchParams();
-      emails.forEach(email => query.append("email", email));
-      query.append("start", start);
-      query.append("end", end);
+        if (emails.length === 0) {
+            setMessages(prev => [...prev, { role: 'bot', text: 'メールアドレスを1つ以上入力してください。' }]);
+            return;
+        }
 
-      try {
+        const start = new Date();
+        const end = new Date;
+        end.setHours(23, 59, 0, 0)
+
+        const query = new URLSearchParams();
+        emails.forEach(email => query.append("email", email));
+        query.append("start", start.toISOString());
+        query.append("end", end.toISOString());
+
+        try {
         const res = await fetch(`http://localhost:8080/calendar/db/group/free?${query}`, {
-          method: 'GET',
-          credentials: 'include',
+            method: 'GET',
+            credentials: 'include',
         });
 
         const data = await res.json();
         const slots = data.free_slots || [];
 
         if (slots.length === 0) {
-          botReply = "空き時間が見つかりませんでした。";
+            botReply = "空き時間が見つかりませんでした。";
         } else {
-          const lines = slots.map((slot: any, idx: number) => {
+            const lines = slots.map((slot: any, idx: number) => {
             const startTime = new Date(slot.start).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
             const endTime = new Date(slot.end).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
             return `${idx + 1}. ${startTime} ～ ${endTime}`;
-          });
-          botReply = `以下の空き時間が見つかりました:\n${lines.join('\n')}`;
+            });
+            botReply = `以下の空き時間が見つかりました:\n${lines.join('\n')}`;
         }
-      } catch (err) {
+        } catch (err) {
         console.error("空き時間取得エラー:", err);
         botReply = "空き時間の取得中にエラーが発生しました。";
-      }
+        }
 
-      setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
-      return;
+        setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
+        return;
     }
 
-    // -------------------------------
-    // その他の処理（未定義時の応答）
-    // -------------------------------
+    // 未定義時の応答
     setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
   };
 
