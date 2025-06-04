@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"github/k-kanke/backend/utils"
+	"log"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -36,6 +37,7 @@ func GetCalendarEvents(token *oauth2.Token, start, end time.Time) ([]*calendar.E
 }
 
 func CreateCalendarEvent(token *oauth2.Token, title string, start, end time.Time) error {
+	log.Println("[CreateCalendarEvent] 呼ばれた！！")
 	ctx := context.Background()
 	config := utils.GetGoogleOAuthConfig()
 	client := config.Client(ctx, token)

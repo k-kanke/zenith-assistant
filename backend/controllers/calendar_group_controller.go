@@ -57,8 +57,9 @@ func GetEventsByEmail(c *gin.Context) {
 
 // 複数ユーザーに対してemailから予定を登録
 func CreateEventByEmail(c *gin.Context) {
+	// log.Println("[aaaaaaaaaaaaa]")
 	var req struct {
-		Emails []string  `json:"email"`
+		Emails []string  `json:"emails"`
 		Title  string    `json:"title"`
 		Start  time.Time `json:"start"`
 		End    time.Time `json:"end"`
@@ -86,6 +87,8 @@ func CreateEventByEmail(c *gin.Context) {
 
 		successList = append(successList, email)
 	}
+
+	log.Println("[bbbbbbbbb]")
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":    "予定の作成に成功しました",
