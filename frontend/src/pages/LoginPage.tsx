@@ -6,6 +6,13 @@ import ChatPage from "./ChatPage";
 const LoginPage: React.FC = () => {
     const [loggedIn, setLoggedIn] = useState(false);
 
+    const [initialSchedule, setInitialSchedule] = useState<{
+        title: string;
+        start: string;
+        end: string;
+        emails: string[];
+    } | null>(null);
+
     // Cookie内のアクセストークン確認
     useEffect(() => {
         const checkLogin = async () => {
@@ -44,10 +51,10 @@ const LoginPage: React.FC = () => {
     return (
         <div className="container">
           <div className="left-panel">
-            <ScheduleDetailPage />
+            <ScheduleDetailPage initialData={initialSchedule} />
           </div>
           <div className="right-panel">
-            <ChatPage loggedIn={loggedIn} />
+            <ChatPage setInitialSchedule={setInitialSchedule} loggedIn={loggedIn} />
           </div>
         </div>
     );

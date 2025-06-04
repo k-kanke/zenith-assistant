@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 
-type ChatProps = {
-  loggedIn: boolean;
+type basicScheduleInfo = {
+    title: string;
+    start: string;
+    end: string;
+    emails: string[];
 };
 
-const ChatPage: React.FC<ChatProps> = ({ loggedIn }) => {
+type ChatProps = {
+    setInitialSchedule: (schedule: basicScheduleInfo) => void;
+    loggedIn: boolean;
+};
+
+const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -88,6 +96,39 @@ const ChatPage: React.FC<ChatProps> = ({ loggedIn }) => {
         }
 
         setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
+        return;
+    }
+
+    // 会議情報をパーズして初期値にセット
+    if (message.includes("会議")) {
+        try {
+            const res = await fetch("http://localhost:8080/calendar/db/parse", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message }),
+            });
+
+            const data = await res.json()
+
+            setInitialSchedule({
+                title: data.title,
+                start: data.start,
+                end: data.end,
+                emails: data.emails,
+            });
+
+            setMessages(prev => [
+                ...prev,
+                { role: 'bot', text: "予定の詳細を左側に表示しました。" }
+            ]);
+        } catch (e) {
+            console.error(e);
+            setMessages(prev => [
+                ...prev,
+                { role: 'bot', text: "予定の解析に失敗しました。" }
+            ]);
+        }
+
         return;
     }
 
