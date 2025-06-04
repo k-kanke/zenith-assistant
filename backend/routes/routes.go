@@ -36,7 +36,8 @@ func SetupRoutes() *gin.Engine {
 		calendardb.GET("/group/get", controllers.GetEventsByEmail)       // emailからその人の予定を取得
 		calendardb.POST("/group/create", controllers.CreateEventByEmail) // emailから予定を登録
 		calendardb.GET("/group/multi", controllers.GetEventsMultipleUsers)
-		calendardb.GET("/group/free", controllers.GetFreeSlots) // 空き時間を取得
+		calendardb.GET("/group/free", controllers.GetFreeSlots)    // 空き時間を取得
+		calendardb.POST("/parse", controllers.ParseScheduleIntent) // 予定登録の初期情報をクエリから抽出
 	}
 
 	// カレンダーAPI(Cookieからトークンを取得)
