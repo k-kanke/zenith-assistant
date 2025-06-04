@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Chat from "../components/Chat";
 import ScheduleDetailPage from "./ScheduleDetailPage";
+import ChatPage from "./ChatPage";
 
 const LoginPage: React.FC = () => {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -46,7 +47,7 @@ const LoginPage: React.FC = () => {
             <ScheduleDetailPage />
           </div>
           <div className="right-panel">
-            <Chat loggedIn={loggedIn} />
+            <ChatPage loggedIn={loggedIn} />
           </div>
         </div>
     );

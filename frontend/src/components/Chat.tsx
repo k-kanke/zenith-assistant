@@ -11,6 +11,7 @@ type ChatProps = {
     loggedIn: boolean;
 };
 
+// 初期チャット欄（タスク要素あり）
 const Chat: React.FC<ChatProps> = ({ loggedIn }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
@@ -29,6 +30,7 @@ const Chat: React.FC<ChatProps> = ({ loggedIn }) => {
         const isGetTask = message.includes("タスク") && message.includes("教えて");
 
         const isCompleteTask = /^\d+\s*完了$/.test(message.trim());
+        const isFreeSlotRequest = message.includes("空き時間");
 
 
         let endpoint = "";
