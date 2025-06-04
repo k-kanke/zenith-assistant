@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"github/k-kanke/backend/db"
 	"github/k-kanke/backend/services"
 	"github/k-kanke/backend/utils"
 	"log"
@@ -67,7 +68,7 @@ func GoogleCallback(c *gin.Context) {
 	log.Println("[GoogleCallback] SaveUser 成功")
 
 	// トークン保存
-	err = services.SaveToken(
+	err = db.SaveToken(
 		userinfo.Email,
 		token.AccessToken,
 		token.RefreshToken,
