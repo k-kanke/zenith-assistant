@@ -44,6 +44,7 @@ func SetupRoutes() *gin.Engine {
 	user := r.Group("/user")
 	{
 		user.POST("/register", controllers.RegisterUserHandler) // user情報をfirestoreに保存
+		user.GET("/get/info", controllers.GetAllUsersHandler)   // firestoreに保存されているユーザー情報を取得
 	}
 
 	// カレンダーAPI(Cookieからトークンを取得)
