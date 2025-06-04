@@ -55,29 +55,41 @@ func GetEventsByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"events": events})
 }
 
+// 複数ユーザーに対してemailから予定を登録
 func CreateEventByEmail(c *gin.Context) {
 	var req struct {
-		Email string    `json:"email"`
-		Title string    `json:"title"`
-		Start time.Time `json:"start"`
-		End   time.Time `json:"end"`
+		Emails []string  `json:"email"`
+		Title  string    `json:"title"`
+		Start  time.Time `json:"start"`
+		End    time.Time `json:"end"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	token, err := services.GetValidTokenByEmail(req.Email)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found or expired"})
-		return
+	successList := []string{}
+	failedList := map[string]string{}
+
+	for _, email := range req.Emails {
+		token, err := services.GetValidTokenByEmail(email)
+		if err != nil {
+			failedList[email] = "トークンが存在しない、または有効期限切れです"
+			continue
+		}
+
+		err = services.CreateCalendarEvent(token, req.Title, req.Start, req.End)
+		if err != nil {
+			failedList[email] = "予定作成に失敗しました"
+			continue
+		}
+
+		successList = append(successList, email)
 	}
 
-	err = services.CreateCalendarEvent(token, req.Title, req.Start, req.End)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create event"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Event created successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"message":    "予定の作成に成功しました",
+		"successfrl": successList,
+		"failed":     failedList,
+	})
 }
