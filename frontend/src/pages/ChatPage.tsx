@@ -282,11 +282,12 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
                 height: '48px',
                 borderRadius: '50%',
                 border: 'none',
-                backgroundColor: '#000',
+                background: 'linear-gradient(145deg, #222, #000)',
                 color: '#fff',
                 fontSize: '1.5rem',
                 cursor: 'pointer',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                boxShadow: '0 2px 10px rgba(5, 5, 5, 0.2)',
+                transition: 'all 0.3s ease-in-out',
       }}>
         🖊️
       </button>

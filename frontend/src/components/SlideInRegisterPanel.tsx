@@ -65,12 +65,17 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
           style={{ width: '100%', marginBottom: '1rem' }}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-          <button onClick={onClose}>キャンセル</button>
+          <button onClick={onClose}>Close</button>
           <button
-            onClick={() => onSubmit(email, nickname, affiliation)}
+            onClick={() => {
+                onSubmit(email, nickname, affiliation);
+                setEmail('');
+                setNickname('');
+                setAffiliation('');
+            }}
             style={{ backgroundColor: '#000', color: '#fff', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '0.5rem' }}
           >
-            保存
+            Save
           </button>
         </div>
         <hr style={{ margin: '1rem 0' }} />
