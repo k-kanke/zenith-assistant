@@ -42,5 +42,7 @@ func GetFreeSlots(c *gin.Context) {
 		return
 	}
 
+	log.Println("[slots]: ", slots)
+
 	c.JSON(http.StatusOK, gin.H{"free_slots": slots})
 }

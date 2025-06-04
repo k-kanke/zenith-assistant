@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import UserRegisterModal from "../components/UserRegisterModal";
+import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
 
 type basicScheduleInfo = {
     title: string;
@@ -16,6 +18,8 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const [showPanel, setShowPanel] = useState(false);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -134,6 +138,12 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
 
     // 未定義時の応答
     setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
+  };
+
+  const handleUserRegister = (email: string, nickname: string, affiliation: string) => {
+    console.log("登録データ:", email, nickname, affiliation);
+    // Firestore保存ロジックここに追加予定
+    setShowPanel(false);
   };
 
   return (
@@ -264,7 +274,7 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
         </div>
       </div>
 
-      <button onClick={() => {}} style={{
+      <button onClick={() => setShowPanel(!showPanel)} style={{
                 position: 'fixed',
                 bottom: '3rem',
                 right: '3rem',
@@ -278,8 +288,20 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
                 cursor: 'pointer',
                 boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
       }}>
-        🗒️
+        🖊️
       </button>
+
+      {/* パネル表示 */}
+      {showPanel && (
+        <SlideInRegisterPanel
+          onClose={() => setShowPanel(false)}
+          onSubmit={(email, nickname, affiliation) => {
+            console.log({ email, nickname, affiliation });
+          }}
+        />
+      )}
+
+      
 
     </div>
   );
