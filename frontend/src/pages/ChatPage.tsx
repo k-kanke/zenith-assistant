@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import UserRegisterModal from "../components/UserRegisterModal";
 import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
-
+import { User } from "../types/types";
+import { MentionsInput, Mention } from 'react-mentions';
+ 
 type basicScheduleInfo = {
     title: string;
     start: string;
@@ -10,11 +12,12 @@ type basicScheduleInfo = {
 };
 
 type ChatProps = {
+    registeredUsers: User[];
     setInitialSchedule: (schedule: basicScheduleInfo) => void;
     loggedIn: boolean;
 };
 
-const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
+const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, loggedIn }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -237,6 +240,7 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
           borderRadius: '0.5rem',
           width: '60%',
         }}>
+          {/*
           <textarea
             ref={textareaRef}
             value={message}
@@ -255,6 +259,27 @@ const ChatPage: React.FC<ChatProps> = ({ setInitialSchedule, loggedIn }) => {
               maxHeight: '192px',
             }}
           />
+          */}
+          <MentionsInput
+            value={message}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
+            style={{
+              width: '100%',
+              minHeight: '40px',
+              fontSize: '1rem',
+              padding: '0.2rem',
+            }}
+          >
+          <Mention
+            trigger="@"
+            data={registeredUsers.map(user => ({
+                id: user.email,
+                display: user.nickname || user.email,
+              }))}
+              markup="@__id__"
+              displayTransform={(id: string, display: string) => `@${display}`}
+            />
+          </MentionsInput>
           <button
             onClick={handleSend}
             style={{

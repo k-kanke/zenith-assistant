@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import Chat from "../components/Chat";
 import ScheduleDetailPage from "./ScheduleDetailPage";
 import ChatPage from "./ChatPage";
+import { User } from "../types/types";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 const LoginPage: React.FC = () => {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [users, setUsers] = useState<User[]>([]);
 
     const [initialSchedule, setInitialSchedule] = useState<{
         title: string;
@@ -31,6 +35,14 @@ const LoginPage: React.FC = () => {
     
         checkLogin();
     }, []);
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+            const userList = snapshot.docs.map((doc) => doc.data() as User);
+            setUsers(userList);
+        });
+        return () => unsubscribe();
+    }, []);
     
 
     const handleLogin = () => {
@@ -54,7 +66,11 @@ const LoginPage: React.FC = () => {
             <ScheduleDetailPage initialData={initialSchedule} />
           </div>
           <div className="right-panel">
-            <ChatPage setInitialSchedule={setInitialSchedule} loggedIn={loggedIn} />
+            <ChatPage 
+                setInitialSchedule={setInitialSchedule} 
+                loggedIn={loggedIn} 
+                registeredUsers={users} 
+            />
           </div>
         </div>
     );
