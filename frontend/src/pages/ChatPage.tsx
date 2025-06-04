@@ -32,16 +32,30 @@ const ChatPage: React.FC<ChatProps> = ({ loggedIn }) => {
 
     if (isFreeSlotRequest) {
         // ユーザーの入力から設定できるように（後々ここはAIで）
-        const emailMatch = message.replace("空き時間", "").trim();
-        const emails = emailMatch.split(",").map(e => e.trim()).filter(e => e.includes("@"));
+        const args = message.replace("空き時間", "").trim();
+        const tokens = args.split(" ")
 
-        if (emails.length === 0) {
-            setMessages(prev => [...prev, { role: 'bot', text: 'メールアドレスを1つ以上入力してください。' }]);
-            return;
+        let date = new Date(); // デフォルトで今日を設定
+        let emails: string[] = [];
+
+        if (tokens.length > 0) {
+            const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+            if (datePattern.test(tokens[0])) {
+                date = new Date(`${tokens[0]}T00:00:00+09:00`);
+                emails = tokens.slice(1).join(" ").split(",").map(e => e.trim());
+              } else {
+                emails = args.split(",").map(e => e.trim());
+              }
         }
 
-        const start = new Date();
-        const end = new Date;
+        if (emails.length === 0 || emails.some(e => !e.includes("@"))) {
+            setMessages(prev => [...prev, { role: 'bot', text: "正しいメールアドレスを1つ以上入力してください。" }]);
+            return;
+          }      
+
+        const start = new Date(date);
+        start.setHours(0, 0, 0, 0)
+        const end = new Date(date);
         end.setHours(23, 59, 0, 0)
 
         const query = new URLSearchParams();
