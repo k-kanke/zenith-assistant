@@ -48,12 +48,20 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   };
 
   // End時間を計算
-  const calcEnd = (date: string, start: string, duration: string): string => {
+  const calcEnd = (date: string | null, start: string | null, duration: string | null): string => {
+    if (!date || !start || !duration) {
+      throw new Error("日付、開始時刻、所要時間のいずれかが不足しています。")
+    }
     const startTime = new Date(`${date}T${start}:00+09:00`);
-    const min = duration.includes("時間")
-        ? parseFloat(duration) * 60
-        : parseInt(duration.replace("分", ""));
-    startTime.setMinutes(startTime.getMinutes() + min);
+    let minutes: number;
+    if (duration.includes("時間")) {
+      minutes = parseFloat(duration) * 60;
+    } else if (duration.includes("分")) {
+      minutes = parseInt(duration.replace("分", ""));
+    } else {
+      throw new Error("所要時間の形式が不正です（例：「1時間」または「30分」）");
+    }
+    startTime.setMinutes(startTime.getMinutes() + minutes);
     return startTime.toISOString();
   }
 
@@ -124,22 +132,40 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
 
         case 'schedule_register':
             setInitialSchedule({
-                title: route.title || '予定',
-                emails: route.emails,
-                start: `${route.date}T${route.start_time}:00+09:00`,
-                end: calcEnd(route.date, route.start_time, route.duration),
+                title: route.title || '',
+                emails: route.emails || [],
+                start: route.start_time && route.date
+                  ? `${route.date}T${route.start_time}:00+09:00`
+                  : '',
+                end: route.start_time && route.duration && route.date
+                  ? calcEnd(route.date, route.start_time, route.duration)
+                  : '',
             });
             return setMessages(prev => [...prev, { role: 'bot', text: "予定の詳細を左側に表示しました。" }]);
 
         case 'schedule_register_direct':
+            let end = '';
+            try {
+              end = calcEnd(route.date, route.start_time, route.duration);
+            } catch (err) {
+              setMessages(prev => [
+                ...prev,
+                { role: 'bot', text: "所要時間が見つからなかったため、予定の終了時刻を計算できませんでした。" },
+              ]);
+              return;
+            }
+
             await fetch('http://localhost:8080/calendar/db/group/create', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     title: route.title || '予定',
-                    emails: route.emails,
-                    start: `${route.date}T${route.start_time}:00+09:00`,
-                    end: calcEnd(route.date, route.start_time, route.duration),
+                    emails: route.emails || [],
+                    start: route.date && route.start_time
+                      ? `${route.date}T${route.start_time}:00+09:00`
+                      : '',
+                    end: end,
+                    
                 }),
                 credentials: 'include',
             });
