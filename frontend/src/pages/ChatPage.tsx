@@ -311,7 +311,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           alignItems: 'center',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '0.5rem',
-          width: '60%',
+          width: '95%',
           // overflow: 'hidden',
           maxHeight: '12rem',
           border: 'none',
@@ -373,7 +373,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         </div>
       </div>
 
-      
+      {/*
       <img
         src="/book.jpg" 
         alt="Book"
@@ -425,6 +425,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             />
         </div>
       )}
+      */}
     </div>
   );
 };

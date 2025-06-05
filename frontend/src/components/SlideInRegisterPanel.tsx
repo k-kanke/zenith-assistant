@@ -38,7 +38,7 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
         // padding: '1.5rem',
         transition: 'transform 0.3s ease-in-out',
       }}>
-        <h3 style={{ marginBottom: '1rem' }}>ユーザー登録</h3>
+        <h4 style={{ marginBottom: '0.5rem' }}>ユーザー登録</h4>
         <input
           type="email"
           placeholder="メールアドレス"
@@ -74,7 +74,7 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
             Save
           </button>
         </div>
-        <hr style={{ margin: '1rem 0' }} />
+        <hr style={{ margin: '0.5rem 0' }} />
         <h4>登録済みユーザー</h4>
         <ul style={{ fontSize: '0.9rem', maxHeight: '150px', overflowY: 'auto', paddingLeft: '1rem' }}>
         {users.map((user, i) => (

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
 
 type ScheduleData = {
   title: string;
@@ -17,6 +18,9 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
     const [emails, setEmails] = useState('');
+    
+    const [showPanel, setShowPanel] = useState(false);
+    const panelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (initialData) {
@@ -58,6 +62,26 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
         }
     };
 
+    // 外側クリックでパネル閉じる処理
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+                setShowPanel(false);
+            }
+        };
+
+        if (showPanel) {
+            document.addEventListener('mousedown', handleClickOutside);
+            } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+            }
+        
+            // クリーンアップ
+            return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            };
+    }, [showPanel]);
+
     return (
         <div style={{
           padding: '2rem',
@@ -67,6 +91,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           maxWidth: '500px',
           margin: '0 auto',
           fontFamily: 'sans-serif',
+          position: 'relative',
         }}>
           <h2 style={{
             marginBottom: '1.5rem',
@@ -157,6 +182,62 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           >
             予定を登録
           </button>
+        
+          <img
+                src="/book.jpg" 
+                alt="Book"
+                onClick={() => setShowPanel(!showPanel)}
+                style={{
+                    position: 'fixed',
+                    bottom: '3rem',
+                    left: 'calc(25% + 1rem)',
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '10%',
+                    objectFit: 'cover',
+                    // boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                    cursor: 'pointer',
+                    backgroundColor: '#fff',
+                    padding: '6px',
+                    zIndex: 10,
+                }}
+          />
+
+          {showPanel && (
+                <div
+                    ref={panelRef}
+                    style={{
+                    position: 'fixed',
+                    bottom: '6rem',
+                    left: '3rem',
+                    width: '300px',
+                    backgroundColor: '#fff',
+                    border: '1px solid #ccc',
+                    borderRadius: '0.5rem',
+                    padding: '1rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    zIndex: 999,
+                    }}
+                >
+                    <SlideInRegisterPanel
+                      onClose={() => setShowPanel(false)}
+                      onSubmit={async (email, nickname, affiliation) => {
+                        try {
+                        const res = await fetch("http://localhost:8080/user/register", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, nickname, affiliation }),
+                        });
+                        const data = await res.json();
+                        console.log("登録成功:", data.message);
+                        } catch (err) {
+                        console.log("登録失敗", err);
+                        }
+                      }}
+                    />
+                </div>
+            )}
+            
         </div>
     );
 };
