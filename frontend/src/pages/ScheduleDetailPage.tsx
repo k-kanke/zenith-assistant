@@ -199,7 +199,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
                     cursor: 'pointer',
                     backgroundColor: '#fff',
                     padding: '6px',
-                    zIndex: 10,
+                    zIndex: 0,
                 }}
           />
 

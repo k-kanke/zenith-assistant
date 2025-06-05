@@ -22,6 +22,7 @@ func CalculateFreeSlots(emails []string, start, end time.Time) ([]TimeSlot, erro
 
 	// 全ユーザーの予定を取得しマージ
 	for _, email := range emails {
+		log.Println("[開始] 空き時間計算: ", emails)
 		token, err := db.GetValidTokenByEmail(email)
 		if err != nil {
 			log.Println("[トークン作成失敗]", email, err)
@@ -43,11 +44,14 @@ func CalculateFreeSlots(emails []string, start, end time.Time) ([]TimeSlot, erro
 			TimeMin(start.Format(time.RFC3339)).
 			TimeMax(end.Format(time.RFC3339)).
 			OrderBy("startTime").
+			MaxResults(100).
 			Do()
 		if err != nil {
 			log.Println("[CalculateFreeSlots] イベント取得失敗:", email, err)
 			continue
 		}
+
+		log.Println("[events]:", events)
 
 		allEvents = append(allEvents, events.Items...)
 	}

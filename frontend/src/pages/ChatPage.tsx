@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
-import UserRegisterModal from "../components/UserRegisterModal";
-import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
 import { User } from "../types/types";
 import { MentionsInput, Mention } from 'react-mentions';
  
@@ -34,160 +32,123 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     }
   }, [message]);
 
-  const handleSend = async () => {
-    if (!message.trim()) return;
+  // Geminiで自然言語処理させる
+  const routeByLLM = async (message: string) => {
+    try {
+        const res = await fetch("http://localhost:8080/gemini/route", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+        });
+        return await res.json();
+    } catch (err) {
+        console.error("Gemini routing error", err);
+        return { intent: "unknown" };
+    }
+  };
 
-    const cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
+  // End時間を計算
+  const calcEnd = (date: string, start: string, duration: string): string => {
+    const startTime = new Date(`${date}T${start}:00+09:00`);
+    const min = duration.includes("時間")
+        ? parseFloat(duration) * 60
+        : parseInt(duration.replace("分", ""));
+    startTime.setMinutes(startTime.getMinutes() + min);
+    return startTime.toISOString();
+  }
 
-    const userMessage = cleanedMessage;
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setMessage('');
+  // 空き時間ハンドラ
+  const handleFreeSlot = async (emails: string[], dateStr: string) => {
+    const date = new Date(`${dateStr}T00:00:00+09:00`);
+    const start = new Date(date);
+    const end = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 0, 0);
 
-    let botReply = '';
+    const formatWithTZ = (d: Date) => {
+        return d.toISOString().replace('Z', '+09:00');
+    };
 
-    // 空き時間リクエストの処理
-    const isFreeSlotRequest = cleanedMessage.includes("空き時間");
+    function toJstISOString(date: Date) {
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}+09:00`;
+    }
 
-    if (isFreeSlotRequest) {
-        // ユーザーの入力から設定できるように（後々ここはAIで）
-        const args = cleanedMessage.replace("空き時間", "").trim();
-        const tokens = args.split(" ")
+    const query = new URLSearchParams();
+    emails.forEach(email => query.append("email", email));
+    query.append("start", toJstISOString(start));
+    query.append("end", toJstISOString(end));
 
-        let date = new Date(); // デフォルトで今日を設定
-        let emails: string[] = [];
-
-        if (tokens.length > 0) {
-            const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-            if (datePattern.test(tokens[0])) {
-                date = new Date(`${tokens[0]}T00:00:00+09:00`);
-                emails = tokens.slice(1).join(" ").split(",").map(e => e.trim());
-              } else {
-                emails = args.split(",").map(e => e.trim());
-              }
-        }
-
-        if (emails.length === 0 || emails.some(e => !e.includes("@"))) {
-            setMessages(prev => [...prev, { role: 'bot', text: "正しいメールアドレスを1つ以上入力してください。" }]);
-            return;
-          }      
-
-        const start = new Date(date);
-        start.setHours(0, 0, 0, 0)
-        const end = new Date(date);
-        end.setHours(23, 59, 0, 0)
-
-        const query = new URLSearchParams();
-        emails.forEach(email => query.append("email", email));
-        query.append("start", start.toISOString());
-        query.append("end", end.toISOString());
-
-        try {
+    try {
         const res = await fetch(`http://localhost:8080/calendar/db/group/free?${query}`, {
             method: 'GET',
             credentials: 'include',
         });
-
         const data = await res.json();
         const slots = data.free_slots || [];
 
         if (slots.length === 0) {
-            botReply = "空き時間が見つかりませんでした。";
+            setMessages(prev => [...prev, { role: 'bot', text: "空き時間が見つかりませんでした。" }]);
         } else {
-            const firstDate = new Date(slots[0].start);
-
-            const optionsDate: Intl.DateTimeFormatOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'short',
-                timeZone: 'Asia/Tokyo',
-            };
-
-            const optionsTime: Intl.DateTimeFormatOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-                timeZone: 'Asia/Tokyo',
-            };
-
-            const dateStr = firstDate.toLocaleDateString('ja-JP', optionsDate);
-
-            const lines = slots.map((slot: any, idx: number) => {
-                const start = new Date(slot.start);
-                const end = new Date(slot.end);
-                const startTime = start.toLocaleString('ja-JP', optionsTime);
-                const endTime = end.toLocaleString('ja-JP', optionsTime);
-                return `${idx + 1}.    ${startTime} ～ ${endTime}`;
-            });
-            botReply = `以下の空き時間が見つかりました:\n${dateStr}\n${lines.join('\n')}`;
-        }
-        } catch (err) {
-        console.error("空き時間取得エラー:", err);
-        botReply = "空き時間の取得中にエラーが発生しました。";
-        }
-
-        setMessages(prev => [...prev, { role: 'bot', text: botReply }]);
-        return;
+            const lines = slots.map((slot: any, i: number) => {
+                const s = new Date(slot.start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', hour12: false });
+                const e = new Date(slot.end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', hour12: false });
+                return `${i + 1}. ${s} ～ ${e}`;
+        });
+        setMessages(prev => [...prev, { role: 'bot', text: `以下の空き時間が見つかりました:\n${lines.join('\n')}` }]);
+      }
+    } catch (err) {
+        console.error(err);
+        setMessages(prev => [...prev, { role: 'bot', text: "空き時間の取得中にエラーが発生しました。" }]);
     }
-
-    // 会議情報をパーズして初期値にセット
-    if (cleanedMessage.includes("会議")) {
-        try {
-            const res = await fetch("http://localhost:8080/calendar/db/parse", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: cleanedMessage }),
-            });
-
-            const data = await res.json()
-
-            setInitialSchedule({
-                title: data.title,
-                start: data.start,
-                end: data.end,
-                emails: data.emails,
-            });
-
-            setMessages(prev => [
-                ...prev,
-                { role: 'bot', text: "予定の詳細を左側に表示しました。" }
-            ]);
-        } catch (e) {
-            console.error(e);
-            setMessages(prev => [
-                ...prev,
-                { role: 'bot', text: "予定の解析に失敗しました。" }
-            ]);
-        }
-
-        return;
-    }
-
-    // 未定義時の応答
-    setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
   };
 
-  // 外側クリックでパネル閉じる処理
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-        if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-            setShowPanel(false);
-        }
-    };
+  // Geminiの答えによって対応を変更
+  const handleSend = async () => {
+    if (!message.trim()) return;
 
-    if (showPanel) {
-        document.addEventListener('mousedown', handleClickOutside);
-      } else {
-        document.removeEventListener('mousedown', handleClickOutside);
-      }
-  
-      // クリーンアップ
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, [showPanel]);
+    const cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
+    const userMessage = cleanedMessage;
+    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    setMessage('');
 
+    //let botReply = '';
 
+    // 空き時間リクエストの処理
+    //const isFreeSlotRequest = cleanedMessage.includes("空き時間");
+
+    const route = await routeByLLM(cleanedMessage);
+    switch (route.intent) {
+        case 'free_slot_request':
+            return await handleFreeSlot(route.emails, route.date);
+
+        case 'schedule_register':
+            setInitialSchedule({
+                title: route.title || '予定',
+                emails: route.emails,
+                start: `${route.date}T${route.start_time}:00+09:00`,
+                end: calcEnd(route.date, route.start_time, route.duration),
+            });
+            return setMessages(prev => [...prev, { role: 'bot', text: "予定の詳細を左側に表示しました。" }]);
+
+        case 'schedule_register_direct':
+            await fetch('http://localhost:8080/calendar/db/create', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: route.title || '予定',
+                    emails: route.emails,
+                    start: `${route.date}T${route.start_time}:00+09:00`,
+                    end: calcEnd(route.date, route.start_time, route.duration),
+                }),
+                credentials: 'include',
+            });
+            return setMessages(prev => [...prev, { role: 'bot', text: "予定を登録しました！" }]);
+
+        default:
+            return setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
+    }
+  }
 
   return (
     <div style={{
@@ -372,60 +333,6 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           </button>
         </div>
       </div>
-
-      {/*
-      <img
-        src="/book.jpg" 
-        alt="Book"
-        onClick={() => setShowPanel(!showPanel)}
-        style={{
-            position: 'fixed',
-            bottom: '3rem',
-            right: '3rem',
-            width: '48px',
-            height: '48px',
-            borderRadius: '10%',
-            objectFit: 'cover',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-            cursor: 'pointer',
-        }}
-      />
-
-      {showPanel && (
-        <div
-            ref={panelRef}
-            style={{
-            position: 'fixed',
-            bottom: '6rem',
-            right: '3rem',
-            width: '300px',
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            zIndex: 999,
-            }}
-        >
-            <SlideInRegisterPanel
-              onClose={() => setShowPanel(false)}
-              onSubmit={async (email, nickname, affiliation) => {
-                try {
-                const res = await fetch("http://localhost:8080/user/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, nickname, affiliation }),
-                });
-                const data = await res.json();
-                console.log("登録成功:", data.message);
-                } catch (err) {
-                console.log("登録失敗", err);
-                }
-              }}
-            />
-        </div>
-      )}
-      */}
     </div>
   );
 };

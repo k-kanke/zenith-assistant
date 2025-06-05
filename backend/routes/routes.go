@@ -47,6 +47,9 @@ func SetupRoutes() *gin.Engine {
 		user.GET("/get/info", controllers.GetAllUsersHandler)   // firestoreに保存されているユーザー情報を取得
 	}
 
+	// GeminiAPI
+	r.POST("/gemini/route", controllers.GeminiRouteHandler)
+
 	// カレンダーAPI(Cookieからトークンを取得)
 	calendar := r.Group("/calendar")
 	{
