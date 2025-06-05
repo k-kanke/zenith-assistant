@@ -132,7 +132,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             return setMessages(prev => [...prev, { role: 'bot', text: "予定の詳細を左側に表示しました。" }]);
 
         case 'schedule_register_direct':
-            await fetch('http://localhost:8080/calendar/db/create', {
+            await fetch('http://localhost:8080/calendar/db/group/create', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
