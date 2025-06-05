@@ -257,36 +257,37 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '0.5rem',
           width: '60%',
-          overflow: 'hidden',
+          // overflow: 'hidden',
           maxHeight: '12rem',
           border: 'none',
         }}>
-          {/*
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="メッセージを入力（Shift + Enterで改行）"
-            rows={1}
-            style={{
-              flex: 1,
-              padding: '0.1rem',
-              border: 'none',
-              outline: 'none',
-              fontSize: '1rem',
-              resize: 'none',
-              overflow: 'auto',
-              lineHeight: '24px',
-              maxHeight: '192px',
-            }}
-          />
-          */}
           <MentionsInput
             value={message}
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
             placeholder="Please ask Questions about Schedule"
-            allowSuggestionsAboveCursor
+            allowSuggestionsAboveCursor={true}
             className="chat-input"
+            style={{
+                suggestions: {
+                    list: {
+                      backgroundColor: '#fff',
+                      border: '1px solid #ccc',
+                      fontSize: '1rem',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      width: '250px', 
+                      position: 'absolute',
+                      zIndex: 1000,
+                      bottom: '100%',
+                      top: 'auto',
+                    },
+                    item: {
+                      padding: '8px 12px',
+                      borderBottom: '1px solid #eee',
+                      cursor: 'pointer',
+                    },
+                },
+            }}
           >
           <Mention
             trigger="@"
@@ -295,7 +296,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 display: user.nickname || user.email,
               }))}
               markup="@__id__"
-              displayTransform={(id: string, display: string) => `@${display}`}
+              displayTransform={(id: string, display: string) => `${display}`}
             />
           </MentionsInput>
           <button
@@ -317,22 +318,22 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         </div>
       </div>
 
-      <div>
-        <img
-            src="/book.jpg" 
-            alt="Book"
-            onClick={() => setShowPanel(!showPanel)}
-            style={{
-                position: 'fixed',
-                bottom: '3rem',
-                right: '3rem',
-                width: '48px',
-                height: '48px',
-                borderRadius: '10%',
-                objectFit: 'cover',
-            }}
-        />
-      </div>
+      
+      <img
+        src="/book.jpg" 
+        alt="Book"
+        onClick={() => setShowPanel(!showPanel)}
+        style={{
+            position: 'fixed',
+            bottom: '3rem',
+            right: '3rem',
+            width: '48px',
+            height: '48px',
+            borderRadius: '10%',
+            objectFit: 'cover',
+        }}
+      />
+      
 
       {showPanel && (
         <div
@@ -351,8 +352,8 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             }}
         >
             <SlideInRegisterPanel
-            onClose={() => setShowPanel(false)}
-            onSubmit={async (email, nickname, affiliation) => {
+              onClose={() => setShowPanel(false)}
+              onSubmit={async (email, nickname, affiliation) => {
                 try {
                 const res = await fetch("http://localhost:8080/user/register", {
                     method: "POST",
@@ -364,7 +365,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 } catch (err) {
                 console.log("登録失敗", err);
                 }
-            }}
+              }}
             />
         </div>
       )}

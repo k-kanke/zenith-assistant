@@ -31,15 +31,11 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
   
     return (
       <div style={{
-        position: 'fixed',
-        bottom: '5rem',
-        right: '1rem',
-        width: '300px',
+        width: '100%',
         backgroundColor: '#fff',
         borderRadius: '1rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        padding: '1.5rem',
-        zIndex: 1000,
+        // boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        // padding: '1.5rem',
         transition: 'transform 0.3s ease-in-out',
       }}>
         <h3 style={{ marginBottom: '1rem' }}>ユーザー登録</h3>
