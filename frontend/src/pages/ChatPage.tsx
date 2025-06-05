@@ -37,18 +37,20 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   const handleSend = async () => {
     if (!message.trim()) return;
 
-    const userMessage = message;
+    const cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
+
+    const userMessage = cleanedMessage;
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setMessage('');
 
     let botReply = '';
 
     // 空き時間リクエストの処理
-    const isFreeSlotRequest = message.includes("空き時間");
+    const isFreeSlotRequest = cleanedMessage.includes("空き時間");
 
     if (isFreeSlotRequest) {
         // ユーザーの入力から設定できるように（後々ここはAIで）
-        const args = message.replace("空き時間", "").trim();
+        const args = cleanedMessage.replace("空き時間", "").trim();
         const tokens = args.split(" ")
 
         let date = new Date(); // デフォルトで今日を設定
@@ -91,12 +93,33 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         if (slots.length === 0) {
             botReply = "空き時間が見つかりませんでした。";
         } else {
+            const firstDate = new Date(slots[0].start);
+
+            const optionsDate: Intl.DateTimeFormatOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'short',
+                timeZone: 'Asia/Tokyo',
+            };
+
+            const optionsTime: Intl.DateTimeFormatOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Tokyo',
+            };
+
+            const dateStr = firstDate.toLocaleDateString('ja-JP', optionsDate);
+
             const lines = slots.map((slot: any, idx: number) => {
-            const startTime = new Date(slot.start).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
-            const endTime = new Date(slot.end).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
-            return `${idx + 1}. ${startTime} ～ ${endTime}`;
+                const start = new Date(slot.start);
+                const end = new Date(slot.end);
+                const startTime = start.toLocaleString('ja-JP', optionsTime);
+                const endTime = end.toLocaleString('ja-JP', optionsTime);
+                return `${idx + 1}.    ${startTime} ～ ${endTime}`;
             });
-            botReply = `以下の空き時間が見つかりました:\n${lines.join('\n')}`;
+            botReply = `以下の空き時間が見つかりました:\n${dateStr}\n${lines.join('\n')}`;
         }
         } catch (err) {
         console.error("空き時間取得エラー:", err);
@@ -108,12 +131,12 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     }
 
     // 会議情報をパーズして初期値にセット
-    if (message.includes("会議")) {
+    if (cleanedMessage.includes("会議")) {
         try {
             const res = await fetch("http://localhost:8080/calendar/db/parse", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message }),
+                body: JSON.stringify({ message: cleanedMessage }),
             });
 
             const data = await res.json()
@@ -228,12 +251,38 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         position: 'relative',
       }}>
         {messages.map((m, i) => (
-          <div key={i} style={{
-            textAlign: m.role === 'user' ? 'right' : 'left',
-            marginBottom: '0.5rem',
-          }}>
-            <strong>{m.role === 'user' ? 'You' : 'Zenith'}:</strong>
-            <div style={{ whiteSpace: 'pre-wrap' }}>{m.text}</div>
+          <div 
+            key={i} 
+            style={{
+                textAlign: m.role === 'user' ? 'right' : 'left',
+                marginBottom: '0.5rem',
+                display: 'flex',
+                flexDirection: 'column', 
+                alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <strong 
+                style={{ 
+                    marginBottom: '0.2rem', 
+                    fontWeight: m.role === 'bot' ? 700 : 500,          
+                    color: m.role === 'bot' ? '#222' : '#555',         
+                    // fontSize: m.role === 'bot' ? '1rem' : '0.95rem',
+                }}
+            >
+                {m.role === 'user' ? 'You' : 'Zenith'}
+            </strong>
+            <div 
+                style={{ 
+                    whiteSpace: 'pre-wrap',
+                    display: 'inline-block',
+                    backgroundColor: m.role === 'user' ? '#f1f1f1' : 'transparent',
+                    padding: '0.4rem 0.8rem',
+                    borderRadius: '0.5rem',
+                    maxWidth: '80%',
+                }}
+            >
+                {m.text}
+            </div>
           </div>
         ))}
       </div>
@@ -294,10 +343,10 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             data={registeredUsers.map(user => ({
                 id: user.email,
                 display: user.nickname || user.email,
-              }))}
-              markup="@__id__"
-              displayTransform={(id: string, display: string) => `${display}`}
-            />
+            }))}
+            markup="@__id__"
+            displayTransform={(id: string, display: string) => display}
+          />
           </MentionsInput>
           <button
             onClick={handleSend}

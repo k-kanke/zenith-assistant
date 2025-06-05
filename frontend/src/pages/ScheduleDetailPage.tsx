@@ -12,50 +12,51 @@ type Props = {
 };
 
 const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
-  const [title, setTitle] = useState('');
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
-  const [emails, setEmails] = useState('');
+    console.log("[initialData]", initialData)
+    const [title, setTitle] = useState('');
+    const [start, setStart] = useState('');
+    const [end, setEnd] = useState('');
+    const [emails, setEmails] = useState('');
 
-  useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title || '');
-      setStart(initialData.start || '');
-      setEnd(initialData.end || '');
-      setEmails(initialData.emails.join(', '));
-    }
-  }, [initialData]);
+    useEffect(() => {
+        if (initialData) {
+            setTitle(initialData.title || '');
+            setStart(initialData.start || '');
+            setEnd(initialData.end || '');
+            setEmails(initialData.emails.join(', '));
+        }
+    }, [initialData]);
 
-  const handleSubmit = async () => {
-    const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
+    const handleSubmit = async () => {
+        const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
 
-    try {
-      const res = await fetch('http://localhost:8080/calendar/db/group/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          title,
-          start,
-          end,
-          emails: emailList,
-        }),
-      });
+        try {
+        const res = await fetch('http://localhost:8080/calendar/db/group/create', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+            title,
+            start,
+            end,
+            emails: emailList,
+            }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (res.ok) {
-        alert('予定を登録しました');
-      } else {
-        alert(`エラー: ${data.error}`);
-      }
-    } catch (e) {
-      console.error(e);
-      alert('登録に失敗しました');
-    }
-  };
+        if (res.ok) {
+            alert('予定を登録しました');
+        } else {
+            alert(`エラー: ${data.error}`);
+        }
+        } catch (e) {
+        console.error(e);
+        alert('登録に失敗しました');
+        }
+    };
 
   return (
     <div style={{ padding: '2rem' }}>
