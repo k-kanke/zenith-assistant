@@ -285,9 +285,9 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             onClick={handleSend}
             style={{
               marginLeft: '1rem',
-              backgroundColor: '#000',
-              color: '#fff',
-              border: 'none',
+              backgroundColor: message.trim() ? '#000' : '#fff',  
+              color: message.trim() ? '#fff' : '#000',
+              borderColor: '#000',
               borderRadius: '0.5rem',
               padding: '0.5rem 1rem',
               cursor: 'pointer',
@@ -300,23 +300,21 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         </div>
       </div>
 
-      <button onClick={() => setShowPanel(!showPanel)} style={{
-                position: 'fixed',
-                bottom: '3rem',
-                right: '3rem',
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                border: 'none',
-                background: 'linear-gradient(145deg, #222, #000)',
-                color: '#fff',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 10px rgba(5, 5, 5, 0.2)',
-                transition: 'all 0.3s ease-in-out',
-      }}>
-        🖊️
-      </button>
+      <img
+        src="/book.jpg" 
+        alt="Book"
+        onClick={() => setShowPanel(!showPanel)}
+        style={{
+            position: 'fixed',
+            bottom: '3rem',
+            right: '3rem',
+            width: '48px',
+            height: '48px',
+            borderRadius: '10%',
+            objectFit: 'cover',
+        }}
+      />
+      
 
       {/* パネル表示 */}
       {showPanel && (
