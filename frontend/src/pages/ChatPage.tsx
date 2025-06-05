@@ -195,7 +195,9 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
       flexDirection: 'column',
       height: '92vh',
       overflow: 'hidden',
-      padding: '10px'
+      padding: '10px',
+      backgroundColor: '#f4f4f4',
+      borderRadius: '0.5rem',
     }}>
       {/* ヘッダー */}
       <div style={{
@@ -205,7 +207,8 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottom: '1px solid #eee',
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
+        borderRadius: '0.5rem',
       }}>
         <h1 style={{ textAlign: 'center' }}>Zenith</h1>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.8rem' }}>
@@ -238,7 +241,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
               cursor: 'pointer',
             }}
           >
-            リセット
+            会話をリセット
           </button>
         </div>
       </div>
@@ -249,13 +252,16 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         overflowY: 'auto',
         padding: '1rem',
         position: 'relative',
+        backgroundColor: '#fff',
+        borderRadius: '0.5rem',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
       }}>
         {messages.map((m, i) => (
           <div 
             key={i} 
             style={{
                 textAlign: m.role === 'user' ? 'right' : 'left',
-                marginBottom: '0.5rem',
+                marginBottom: '0.75rem',
                 display: 'flex',
                 flexDirection: 'column', 
                 alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
@@ -266,7 +272,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                     marginBottom: '0.2rem', 
                     fontWeight: m.role === 'bot' ? 700 : 500,          
                     color: m.role === 'bot' ? '#222' : '#555',         
-                    // fontSize: m.role === 'bot' ? '1rem' : '0.95rem',
+                    fontSize: '0.9rem',
                 }}
             >
                 {m.role === 'user' ? 'You' : 'Zenith'}
@@ -294,7 +300,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         width: '100%',
         padding: '0.5rem',
         display: 'flex',
-        background: 'transparent',
+        background: '#f4f4f4',
       }}>
         <div style={{
           flexShrink: 0,
@@ -357,7 +363,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
               borderColor: '#000',
               borderRadius: '0.5rem',
               padding: '0.5rem 1rem',
-              cursor: 'pointer',
+              cursor: message.trim() ? 'pointer' : 'not-allowed',
               fontWeight: 'bold',
               alignSelf: 'flex-end',
             }}
@@ -380,9 +386,10 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             height: '48px',
             borderRadius: '10%',
             objectFit: 'cover',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            cursor: 'pointer',
         }}
       />
-      
 
       {showPanel && (
         <div
