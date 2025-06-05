@@ -235,10 +235,14 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           padding: '0.7rem 1rem',
           backgroundColor: '#fff',
           display: 'flex',
-          alignItems: 'flex-end',
+          // alignItems: 'flex-end',
+          alignItems: 'center',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '0.5rem',
           width: '60%',
+          overflow: 'hidden',
+          maxHeight: '12rem',
+          border: 'none',
         }}>
           {/*
           <textarea
@@ -263,12 +267,9 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           <MentionsInput
             value={message}
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
-            style={{
-              width: '100%',
-              minHeight: '40px',
-              fontSize: '1rem',
-              padding: '0.2rem',
-            }}
+            placeholder="Please ask Questions about Schedule"
+            allowSuggestionsAboveCursor
+            className="chat-input"
           >
           <Mention
             trigger="@"
@@ -294,7 +295,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
               alignSelf: 'flex-end',
             }}
           >
-            送信
+            Send
           </button>
         </div>
       </div>

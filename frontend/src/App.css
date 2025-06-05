@@ -54,3 +54,32 @@
   padding: 16px;
   overflow-y: auto;
 }
+
+.chat-input {
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.5rem;
+
+  border: none;
+  outline: none;
+
+  min-height: 2.0rem;      /* 2行分くらい */
+  max-height: 8rem;
+  overflow-y: auto;
+  resize: none;
+
+  box-sizing: border-box;
+}
+
+.chat-input textarea {
+  border: none !important;
+  outline: none !important;
+  resize: none !important;
+  overflow-y: auto !important;
+  padding: 0.4rem 0.5rem !important;
+  min-height: 3.5rem !important;
+  max-height: 8rem !important;
+  font-size: 0.9rem !important;
+  width: 100% !important;
+}
