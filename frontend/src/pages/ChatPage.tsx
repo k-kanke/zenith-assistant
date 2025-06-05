@@ -23,6 +23,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [showPanel, setShowPanel] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -143,11 +144,27 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
   };
 
-  const handleUserRegister = (email: string, nickname: string, affiliation: string) => {
-    console.log("登録データ:", email, nickname, affiliation);
-    // Firestore保存ロジックここに追加予定
-    setShowPanel(false);
-  };
+  // 外側クリックでパネル閉じる処理
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+            setShowPanel(false);
+        }
+    };
+
+    if (showPanel) {
+        document.addEventListener('mousedown', handleClickOutside);
+      } else {
+        document.removeEventListener('mousedown', handleClickOutside);
+      }
+  
+      // クリーンアップ
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [showPanel]);
+
+
 
   return (
     <div style={{
@@ -300,28 +317,43 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         </div>
       </div>
 
-      <img
-        src="/book.jpg" 
-        alt="Book"
-        onClick={() => setShowPanel(!showPanel)}
-        style={{
-            position: 'fixed',
-            bottom: '3rem',
-            right: '3rem',
-            width: '48px',
-            height: '48px',
-            borderRadius: '10%',
-            objectFit: 'cover',
-        }}
-      />
-      
+      <div>
+        <img
+            src="/book.jpg" 
+            alt="Book"
+            onClick={() => setShowPanel(!showPanel)}
+            style={{
+                position: 'fixed',
+                bottom: '3rem',
+                right: '3rem',
+                width: '48px',
+                height: '48px',
+                borderRadius: '10%',
+                objectFit: 'cover',
+            }}
+        />
+      </div>
 
-      {/* パネル表示 */}
       {showPanel && (
-        <SlideInRegisterPanel
-          onClose={() => setShowPanel(false)}
-          onSubmit={async (email, nickname, affiliation) => {
-            try {
+        <div
+            ref={panelRef}
+            style={{
+            position: 'fixed',
+            bottom: '6rem',
+            right: '3rem',
+            width: '300px',
+            backgroundColor: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '0.5rem',
+            padding: '1rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            zIndex: 999,
+            }}
+        >
+            <SlideInRegisterPanel
+            onClose={() => setShowPanel(false)}
+            onSubmit={async (email, nickname, affiliation) => {
+                try {
                 const res = await fetch("http://localhost:8080/user/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -329,15 +361,13 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 });
                 const data = await res.json();
                 console.log("登録成功:", data.message);
-            } catch (err) {
-                console.log("登録失敗", err)
-            }
-          }}
-        />
+                } catch (err) {
+                console.log("登録失敗", err);
+                }
+            }}
+            />
+        </div>
       )}
-
-      
-
     </div>
   );
 };
