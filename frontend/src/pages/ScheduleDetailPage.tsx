@@ -22,17 +22,49 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     const [showPanel, setShowPanel] = useState(false);
     const panelRef = useRef<HTMLDivElement>(null);
 
+    const [startYear, setStartYear] = useState('');
+    const [startMonth, setStartMonth] = useState('');
+    const [startDay, setStartDay] = useState('');
+    const [startTime, setStartTime] = useState('');
+
+    const [endYear, setEndYear] = useState('');
+    const [endMonth, setEndMonth] = useState('');
+    const [endDay, setEndDay] = useState('');
+    const [endTime, setEndTime] = useState('');
+
+
     useEffect(() => {
-        if (initialData) {
-            setTitle(initialData.title || '');
-            setStart(initialData.start || '');
-            setEnd(initialData.end || '');
-            setEmails(initialData.emails.join(', '));
-        }
+      if (initialData) {
+        setTitle(initialData.title || '');
+        setEmails(initialData.emails.join(', '));
+    
+        // 開始
+        const start = initialData.start.replace('+09:00', '');
+        const [sy, sm, restS] = start.split('-');
+        const [sd, st] = restS.split('T');
+        setStartYear(sy);
+        setStartMonth(sm);
+        setStartDay(sd);
+        setStartTime(st.slice(0, 5)); // HH:MM
+    
+        // 終了
+        const end = initialData.end.replace('+09:00', '');
+        const [ey, em, restE] = end.split('-');
+        const [ed, et] = restE.split('T');
+        setEndYear(ey);
+        setEndMonth(em);
+        setEndDay(ed);
+        setEndTime(et.slice(0, 5));
+      }
     }, [initialData]);
+    
 
     const handleSubmit = async () => {
         const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
+
+        const start = `${startYear}-${startMonth.padStart(2, '0')}-${startDay.padStart(2, '0')}T${startTime}:00+09:00`;
+        const end = `${endYear}-${endMonth.padStart(2, '0')}-${endDay.padStart(2, '0')}T${endTime}:00+09:00`;
+
 
         try {
         const res = await fetch('http://localhost:8080/calendar/db/group/create', {
@@ -118,33 +150,23 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           </div>
     
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontWeight: 600 }}>開始日時 (ISO形式)</label>
-            <input
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                marginTop: '0.25rem',
-                border: '1px solid #ccc',
-                borderRadius: '0.4rem'
-              }}
-            />
+            <label style={{ fontWeight: 600 }}>開始日時</label>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+              <input placeholder="年" value={startYear} onChange={e => setStartYear(e.target.value)} style={{ width: '5rem' }} />
+              <input placeholder="月" value={startMonth} onChange={e => setStartMonth(e.target.value)} style={{ width: '3rem' }} />
+              <input placeholder="日" value={startDay} onChange={e => setStartDay(e.target.value)} style={{ width: '3rem' }} />
+              <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+            </div>
           </div>
-    
+          
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontWeight: 600 }}>終了日時 (ISO形式)</label>
-            <input
-              value={end}
-              onChange={(e) => setEnd(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                marginTop: '0.25rem',
-                border: '1px solid #ccc',
-                borderRadius: '0.4rem'
-              }}
-            />
+            <label style={{ fontWeight: 600 }}>終了日時</label>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+              <input placeholder="年" value={endYear} onChange={e => setEndYear(e.target.value)} style={{ width: '5rem' }} />
+              <input placeholder="月" value={endMonth} onChange={e => setEndMonth(e.target.value)} style={{ width: '3rem' }} />
+              <input placeholder="日" value={endDay} onChange={e => setEndDay(e.target.value)} style={{ width: '3rem' }} />
+              <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+            </div>
           </div>
     
           <div style={{ marginBottom: '1rem' }}>

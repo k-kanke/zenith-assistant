@@ -48,22 +48,27 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   };
 
   // End時間を計算
-  const calcEnd = (date: string | null, start: string | null, duration: string | null): string => {
-    if (!date || !start || !duration) {
-      throw new Error("日付、開始時刻、所要時間のいずれかが不足しています。")
-    }
-    const startTime = new Date(`${date}T${start}:00+09:00`);
-    let minutes: number;
-    if (duration.includes("時間")) {
-      minutes = parseFloat(duration) * 60;
-    } else if (duration.includes("分")) {
-      minutes = parseInt(duration.replace("分", ""));
-    } else {
-      throw new Error("所要時間の形式が不正です（例：「1時間」または「30分」）");
-    }
-    startTime.setMinutes(startTime.getMinutes() + minutes);
-    return startTime.toISOString();
+  const calcEnd = (date: string, start: string, duration: string): string => {
+    const [year, month, day] = date.split('-').map(Number);
+    const [hour, minute] = start.split(':').map(Number);
+    const startDate = new Date(year, month - 1, day, hour, minute); // ← ローカルタイムで生成
+  
+    const min = duration.includes("時間")
+      ? parseFloat(duration) * 60
+      : parseInt(duration.replace("分", ""));
+  
+    startDate.setMinutes(startDate.getMinutes() + min);
+  
+    // JSTとしてISO形式で返す
+    const yyyy = startDate.getFullYear();
+    const mm = String(startDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(startDate.getDate()).padStart(2, '0');
+    const hh = String(startDate.getHours()).padStart(2, '0');
+    const minStr = String(startDate.getMinutes()).padStart(2, '0');
+  
+    return `${yyyy}-${mm}-${dd}T${hh}:${minStr}:00+09:00`;
   }
+  
 
   // 空き時間ハンドラ
   const handleFreeSlot = async (emails: string[], dateStr: string) => {
