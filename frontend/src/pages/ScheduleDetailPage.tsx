@@ -15,8 +15,8 @@ type Props = {
 const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     console.log("[initialData]", initialData)
     const [title, setTitle] = useState('');
-    const [start, setStart] = useState('');
-    const [end, setEnd] = useState('');
+    // const [start, setStart] = useState('');
+    // const [end, setEnd] = useState('');
     const [emails, setEmails] = useState('');
     
     const [showPanel, setShowPanel] = useState(false);
