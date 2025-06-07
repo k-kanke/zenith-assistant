@@ -71,18 +71,61 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   
 
   // 空き時間ハンドラ
-  const handleFreeSlot = async (emails: string[], dateStr: string) => {
-    const date = new Date(`${dateStr}T00:00:00+09:00`);
-    const start = new Date(date);
-    const end = new Date(date);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 0, 0);
+  const handleFreeSlot = async (
+    emails: string[], 
+    dateStr: string, 
+    startTimeStr?: string,
+    endTimeStr?: string
+  ) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+
+
+    //const date = new Date(`${dateStr}T00:00:00+09:00`);
+    //const start = new Date(date);
+    //const end = new Date(date);
+    //start.setHours(0, 0, 0, 0);
+    //end.setHours(23, 59, 0, 0);
+
+    // // const start = new Date(year, month - 1, day, 0, 0);
+    // // const end = new Date(year, month - 1, day, 23, 59);
+
+    // 開始日時
+    const startHour = startTimeStr ? Number(startTimeStr.split(':')[0]) : 0;
+    const startMinute = startTimeStr ? Number(startTimeStr.split(':')[1]) : 0;
+    const start = new Date(year, month - 1, day, startHour, startMinute);
+
+    // 終了日時
+    let end: Date;
+    if (endTimeStr) {
+      const endHour = Number(endTimeStr.split(':')[0]);
+      const endMinute = Number(endTimeStr.split(':')[1]);
+      end = new Date(year, month - 1, day, endHour, endMinute);
+
+      if (end <= start) {
+        end.setDate(end.getDate() + 1);
+      }
+    } else {
+      end = new Date(year, month - 1, day, 23, 59);
+    }
+
+    console.log("[end]: ", end)
+    
+    
+
+    // start_time が指定されている場合
+    {/* 
+    if (startTimeStr) {
+      const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+      start.setHours(startHour, startMinute, 0, 0);
+      end.setTime(start.getTime() + 24 * 60 * 60 * 1000 - 60 * 1000);
+    }
 
     const formatWithTZ = (d: Date) => {
         return d.toISOString().replace('Z', '+09:00');
     };
+    */}
 
-    function toJstISOString(date: Date) {
+    const toJstISOString = (date: Date) => {
       const pad = (n: number) => n.toString().padStart(2, '0');
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}+09:00`;
     }
@@ -143,7 +186,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     const route = await routeByLLM(cleanedMessage);
     switch (route.intent) {
         case 'free_slot_request':
-            return await handleFreeSlot(route.emails, route.date);
+            return await handleFreeSlot(route.emails, route.date, route.start_time);
 
         case 'schedule_register':
             setInitialSchedule({
