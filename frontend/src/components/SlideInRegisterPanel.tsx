@@ -76,14 +76,26 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
         </div>
         <hr style={{ margin: '0.5rem 0' }} />
         <h4>登録済みユーザー</h4>
-        <ul style={{ fontSize: '0.9rem', maxHeight: '150px', overflowY: 'auto', paddingLeft: '1rem' }}>
-        {users.map((user, i) => (
-            <li key={i}>
-            <strong>{user.nickname}</strong>（{user.affiliation}）<br />
-            <span style={{ color: '#666' }}>{user.email}</span>
-            </li>
-        ))}
-        </ul>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <thead>
+              <tr>
+                <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>Name</th>
+                <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>Aff</th>
+                <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user, i) => (
+                <tr key={i}>
+                  <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.nickname || '-'}</td>
+                  <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.affiliation || '-'}</td>
+                  <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.email}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
 };

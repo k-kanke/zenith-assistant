@@ -24,15 +24,26 @@ const UserList: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{ padding: '1rem', backgroundColor: '#fff', borderRadius: '0.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
       <h3>登録ユーザー一覧</h3>
-      <ul>
-        {users.map((user) => (
-          <li key={user.email}>
-            {user.nickname}（{user.email} / {user.affiliation}）
-          </li>
-        ))}
-      </ul>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+        <thead>
+          <tr>
+            <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>ニックネーム</th>
+            <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>所属</th>
+            <th style={{ borderBottom: '1px solid #ddd', textAlign: 'left', padding: '0.5rem' }}>メールアドレス</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, idx) => (
+            <tr key={idx}>
+              <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.nickname || '-'}</td>
+              <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.affiliation || '-'}</td>
+              <td style={{ borderBottom: '1px solid #eee', padding: '0.5rem' }}>{user.email}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
