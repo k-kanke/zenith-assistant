@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
+import EmailSelector from "../components/EmailSelector";
 
 type ScheduleData = {
   title: string;
@@ -32,11 +33,14 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     const [endDay, setEndDay] = useState('');
     const [endTime, setEndTime] = useState('');
 
+    const [emailsReg, setEmailsReg] = useState<string[]>([]);
+
 
     useEffect(() => {
       if (initialData) {
         setTitle(initialData.title || '');
         setEmails(initialData.emails.join(', '));
+        setEmailsReg(initialData.emails);
     
         // 開始
         const start = initialData.start.replace('+09:00', '');
@@ -168,7 +172,8 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
               <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
             </div>
           </div>
-    
+          
+          {/*
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ fontWeight: 600 }}>参加者メールアドレス（カンマ区切り）</label>
             <textarea
@@ -184,6 +189,12 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
                 fontFamily: 'inherit'
               }}
             />
+          </div>
+          */}
+
+          <div>
+            <EmailSelector onSelect={(e) => setEmailsReg(e)} />
+            <p>現在の選択: {emailsReg.join(", ")}</p>
           </div>
     
           <button
@@ -204,7 +215,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           >
             予定を登録
           </button>
-          
+
           <img
                 src="/book.jpg" 
                 alt="Book"
