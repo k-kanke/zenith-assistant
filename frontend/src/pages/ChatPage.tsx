@@ -234,7 +234,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     }
   }
 
-  // 「#部署」でメンションできるように
+  // 「#部署」でメンション
   const departmentMap = useMemo(() => {
     const map: Record<string, string[]> = {};
     registeredUsers.forEach(user => {
