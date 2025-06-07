@@ -55,7 +55,7 @@ const SlideInRegisterPanel: React.FC<Props> = ({ onClose, onSubmit }) => {
         />
         <input
           type="text"
-          placeholder="所属（例：@sales）"
+          placeholder="所属（例：#sales）"
           value={affiliation}
           onChange={e => setAffiliation(e.target.value)}
           style={{ width: '100%', marginBottom: '1rem' }}

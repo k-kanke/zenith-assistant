@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent, useMemo } from "react";
 import { User } from "../types/types";
 import { MentionsInput, Mention } from 'react-mentions';
  
@@ -124,7 +124,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
 
     setIsLoading(true); // ローディング開始
 
-    const cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
+    let cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
     const userMessage = cleanedMessage;
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setMessage('');
@@ -133,6 +133,12 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
 
     // 空き時間リクエストの処理
     //const isFreeSlotRequest = cleanedMessage.includes("空き時間");
+
+    // #部署名 をメール展開
+    Object.entries(departmentMap).forEach(([dep, emails]) => {
+      const regex = new RegExp(`#${dep}\\b`, 'g');
+      cleanedMessage = cleanedMessage.replace(regex, emails.join(', '));
+    });
 
     const route = await routeByLLM(cleanedMessage);
     switch (route.intent) {
@@ -184,6 +190,18 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             return setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
     }
   }
+
+  // 「#部署」でメンションできるように
+  const departmentMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    registeredUsers.forEach(user => {
+      if (user.affiliation) {
+        if (!map[user.affiliation]) map[user.affiliation] = [];
+        map[user.affiliation].push(user.email);
+      }
+    });
+    return map;
+  }, [registeredUsers]);
 
   return (
     <div style={{
@@ -347,6 +365,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 },
             }}
           >
+          {/* @Nickname でメンション */}
           <Mention
             trigger="@"
             data={registeredUsers.map(user => ({
@@ -356,6 +375,17 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             markup="@__id__"
             displayTransform={(id: string, display: string) => display}
           />
+          {/* @Affiliation でメンション */}
+          <Mention
+            trigger="#"
+            data={Object.keys(departmentMap).map(dep => ({
+              id: dep,
+              display: dep,
+            }))}
+            markup='#__id__'
+            displayTransform={(id: string) => `#${id}`}
+          />
+
           </MentionsInput>
           <button
             onClick={handleSend}
