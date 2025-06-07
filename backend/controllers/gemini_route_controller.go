@@ -38,6 +38,14 @@ func GeminiRouteHandler(c *gin.Context) {
 - "schedule_register_direct"：命令形（「登録しておいて」など）で、そのまま即登録可能なもの
 - "unknown"：どれにも当てはまらない場合
 
+"start_time", "end_time": 空き時間を検索する時間の範囲を設定してください。例えば、「14時以降で空き時間はありますか」という質問に対しては
+"start_time": "14:00"
+"end_time": null
+「15時から20時の間で空き時間ありますか？」という質問に対しては、
+"start_time": "15:00"
+"end_time": "20:00"
+と設定してください。
+
 必ず intent をそのまま文字列で返してください。出力は以下の形式でJSONオブジェクトとしてください：
 
 出力形式（JSON）:
@@ -46,6 +54,7 @@ func GeminiRouteHandler(c *gin.Context) {
   "emails": [...],          // メールアドレスの配列
   "date": "YYYY-MM-DD",     // 日付
   "start_time": "HH:MM",    // 開始時刻（任意）
+  "end_time": "HH:MM",    // 終了時刻（任意）
   "duration": "...",        // 所要時間（任意）
   "title": "..."            // タイトル（任意）
 }

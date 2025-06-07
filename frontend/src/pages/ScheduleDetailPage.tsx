@@ -204,7 +204,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           >
             予定を登録
           </button>
-        
+          
           <img
                 src="/book.jpg" 
                 alt="Book"
