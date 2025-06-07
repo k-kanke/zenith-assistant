@@ -19,8 +19,8 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [showPanel, setShowPanel] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -114,11 +114,15 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
         console.error(err);
         setMessages(prev => [...prev, { role: 'bot', text: "空き時間の取得中にエラーが発生しました。" }]);
     }
+
+    setIsLoading(false); // ローディング終了
   };
 
   // Geminiの答えによって対応を変更
   const handleSend = async () => {
     if (!message.trim()) return;
+
+    setIsLoading(true); // ローディング開始
 
     const cleanedMessage = message.replace(/@([\w.-]+@[\w.-]+\.\w+)/g, '$1');
     const userMessage = cleanedMessage;
@@ -283,6 +287,13 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             </div>
           </div>
         ))}
+
+        {isLoading && (
+          <div className="spinner-wrapper">
+            <div className="spinner-circle"></div>
+            <span>Zenithが考えています...</span>
+          </div>
+        )}
       </div>
 
       {/* 入力欄 */}
