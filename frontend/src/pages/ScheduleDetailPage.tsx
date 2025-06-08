@@ -64,7 +64,9 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     
 
     const handleSubmit = async () => {
-        const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
+        console.log("[emails]:", emailsReg)
+        console.log("[]")
+        // const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
 
         const start = `${startYear}-${startMonth.padStart(2, '0')}-${startDay.padStart(2, '0')}T${startTime}:00+09:00`;
         const end = `${endYear}-${endMonth.padStart(2, '0')}-${endDay.padStart(2, '0')}T${endTime}:00+09:00`;
@@ -81,7 +83,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
             title,
             start,
             end,
-            emails: emailList,
+            emails: emailsReg,
             }),
         });
 
@@ -194,7 +196,10 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
 
           <div>
             <EmailSelector onSelect={(e) => setEmailsReg(e)} />
-            <p>現在の選択: {emailsReg.join(", ")}</p>
+            <div>
+
+            </div>
+            <p>参加者: {emailsReg.join(", ")}</p>
           </div>
     
           <button

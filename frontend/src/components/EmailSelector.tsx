@@ -84,6 +84,7 @@ const EmailSelector: React.FC<Props> = ({ onSelect }) => {
         </ul>
       )}
 
+      {/*
       {selectedEmails.length > 0 && (
         <div style={{ marginTop: "1rem" }}>
           <strong>選択中の参加者:</strong>
@@ -117,6 +118,7 @@ const EmailSelector: React.FC<Props> = ({ onSelect }) => {
           </div>
         </div>
       )}
+      */}
     </div>
   );
 };
