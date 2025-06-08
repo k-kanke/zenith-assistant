@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, ChangeEvent, useMemo } from "react";
 import { User } from "../types/types";
 import { MentionsInput, Mention } from 'react-mentions';
+import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
  
 type basicScheduleInfo = {
     title: string;
@@ -20,7 +21,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [showPanel, setShowPanel] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -246,6 +247,26 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     return map;
   }, [registeredUsers]);
 
+  // 外側クリックでパネル閉じる処理
+  useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+          if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+              setShowPanel(false);
+          }
+      };
+
+      if (showPanel) {
+          document.addEventListener('mousedown', handleClickOutside);
+          } else {
+          document.removeEventListener('mousedown', handleClickOutside);
+          }
+      
+          // クリーンアップ
+          return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+          };
+  }, [showPanel]);
+
   return (
     <div style={{
       display: 'flex',
@@ -361,7 +382,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
       <div style={{
         position: 'sticky',
         bottom: 0,
-        width: '100%',
+        width: '97%',
         padding: '0.5rem',
         display: 'flex',
         background: '#f4f4f4',
@@ -371,15 +392,71 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
           padding: '0.7rem 1rem',
           backgroundColor: '#fff',
           display: 'flex',
-          // alignItems: 'flex-end',
           alignItems: 'center',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '0.5rem',
           width: '95%',
-          // overflow: 'hidden',
-          maxHeight: '12rem',
+          maxHeight: '10rem',
           border: 'none',
+          position: 'relative',
         }}>
+          <img
+            src="/book.jpg" 
+            alt="Book"
+            onClick={() => setShowPanel(!showPanel)}
+            style={{
+                // position: 'relative',
+                bottom: '1rem',
+                left: 'calc(25% + 1rem)',
+                width: '35px',
+                height: '35px',
+                borderRadius: '10%',
+                objectFit: 'cover',
+                // boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                cursor: 'pointer',
+                backgroundColor: '#fff',
+                padding: '1px',
+                zIndex: 0,
+                alignSelf: 'flex-end',
+                marginRight: '1rem'
+            }}
+          />
+
+          {showPanel && (
+            <div
+              ref={panelRef}
+              style={{
+              position: 'fixed',
+              bottom: '6rem',
+              left: '10%',
+              width: '300px',
+              backgroundColor: '#fff',
+              border: '1px solid #ccc',
+              borderRadius: '0.5rem',
+              padding: '1rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              zIndex: 999,
+              }}
+            >
+              <SlideInRegisterPanel
+                onClose={() => setShowPanel(false)}
+                onSubmit={async (email, nickname, affiliation) => {
+                  try {
+                  const res = await fetch("http://localhost:8080/user/register", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ email, nickname, affiliation }),
+                  });
+                  const data = await res.json();
+                  console.log("登録成功:", data.message);
+                  } catch (err) {
+                  console.log("登録失敗", err);
+                  }
+                }}
+              />
+            </div>
+          )}
+
           <MentionsInput
             value={message}
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
