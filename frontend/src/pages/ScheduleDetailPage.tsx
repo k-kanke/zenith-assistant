@@ -194,14 +194,25 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           </div>
           */}
 
-          <div style={{ marginTop: '1rem' }}>
+          <div 
+            style={{ 
+              // marginTop: '0.5rem',
+              marginBottom: '1rem' 
+            }}
+          >
             <EmailSelector
               selected={emailsReg} 
               onSelect={(e) => setEmailsReg(e)} 
             />
             <div>
-              <h4>参加者</h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h4 style={{ marginBottom: '0.5rem' }}>参加者</h4>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '0.3rem',
+                  }}
+                >
                 {emailsReg.map((email, idx) => (
                   <div
                     key={idx}
@@ -237,7 +248,6 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
                 ))}
               </div>
             </div>
-            {/*<p>参加者: {emailsReg.join(", ")}</p>*/}
           </div>
     
           <button

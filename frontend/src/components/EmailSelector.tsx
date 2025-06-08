@@ -76,7 +76,7 @@ const EmailSelector: React.FC<Props> = ({ selected, onSelect }) => {
               onClick={() => handleAdd(user.email)}
               style={{
                 cursor: "pointer",
-                padding: "0.5rem",
+                padding: "0.3rem",
                 borderBottom: "1px solid #eee",
                 backgroundColor: "#fafafa",
                 borderRadius: "0.3rem",
