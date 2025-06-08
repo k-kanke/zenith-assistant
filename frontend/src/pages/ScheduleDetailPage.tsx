@@ -40,7 +40,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
       if (initialData) {
         setTitle(initialData.title || '');
         setEmails(initialData.emails.join(', '));
-        setEmailsReg(initialData.emails);
+        // setEmailsReg(initialData.emails);
     
         // 開始
         const start = initialData.start.replace('+09:00', '');
@@ -194,12 +194,50 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           </div>
           */}
 
-          <div>
-            <EmailSelector onSelect={(e) => setEmailsReg(e)} />
+          <div style={{ marginTop: '1rem' }}>
+            <EmailSelector
+              selected={emailsReg} 
+              onSelect={(e) => setEmailsReg(e)} 
+            />
             <div>
-
+              <h4>参加者</h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {emailsReg.map((email, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '0.3rem 0.6rem',
+                      backgroundColor: '#e0e0e0',
+                      borderRadius: '9999px',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    <span>{email}</span>
+                    <button
+                      onClick={() =>
+                        setEmailsReg((prev) => prev.filter((_, i) => i !== idx)) 
+                      }
+                      style={{
+                        marginLeft: '0.5rem',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1rem',
+                        lineHeight: 1,
+                        color: '#555',
+                      }}
+                      aria-label={`削除 ${email}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p>参加者: {emailsReg.join(", ")}</p>
+            {/*<p>参加者: {emailsReg.join(", ")}</p>*/}
           </div>
     
           <button

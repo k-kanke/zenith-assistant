@@ -9,10 +9,11 @@ type User = {
 };
 
 type Props = {
+  selected: string[];
   onSelect: (emails: string[]) => void;
 };
 
-const EmailSelector: React.FC<Props> = ({ onSelect }) => {
+const EmailSelector: React.FC<Props> = ({ selected, onSelect }) => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
@@ -24,6 +25,10 @@ const EmailSelector: React.FC<Props> = ({ onSelect }) => {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setSelectedEmails(selected);
+  }, [selected]);
 
   // フィルタリング（すでに選択済みは除外）
   const filteredUsers = allUsers.filter(
