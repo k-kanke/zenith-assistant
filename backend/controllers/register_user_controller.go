@@ -21,8 +21,6 @@ func RegisterUserHandler(c *gin.Context) {
 		return
 	}
 
-	log.Println("[aaaaaaaaa]")
-
 	err := services.SaveUserToFirestore(context.Background(), req.Email, req.Nickname, req.Affiliation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Firestoreへの保存に失敗しました"})
