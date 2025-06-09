@@ -187,7 +187,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     const route = await routeByLLM(cleanedMessage);
     switch (route.intent) {
         case 'free_slot_request':
-            return await handleFreeSlot(route.emails, route.date, route.start_time);
+            return await handleFreeSlot(route.emails, route.date, route.start_time, route.end_time);
 
         case 'schedule_register':
             setInitialSchedule({
