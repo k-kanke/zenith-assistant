@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
     
 
     const handleLogin = () => {
-        window.location.href = "https://zenith-assistant-229406209956.asia-northeast1.run.app/auth/google/login";
+        window.location.href = "https://zenith-assistant-229406209956.asia-northeast1.run.app/api/auth/google/login";
     };
 
     if (!loggedIn) {
