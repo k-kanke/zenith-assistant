@@ -51,11 +51,54 @@ const LoginPage: React.FC = () => {
 
     if (!loggedIn) {
         return (
-          <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <div style={{ 
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh",
+                background: "#f9f9f9",
+                padding: "2rem",
+                fontFamily: "'Segoe UI', sans-serif"
+            }}>
             <div>
-                <h1>Zenith</h1>
+                <h1 style={{
+                    fontSize: "3rem",
+                    letterSpacing: "0.2rem",
+                    marginBottom: "0.5rem",
+                    color: "#333"
+                }}>
+                    Zenith
+                </h1>
+                <p style={{
+                    fontSize: "1.1rem",
+                    color: "#555",
+                    maxWidth: "480px",
+                    textAlign: "center",
+                    marginBottom: "2rem"
+                }}>
+                    Zenithは、自然言語チャットから予定調整・登録ができるスマートなカレンダーアシスタントです。参加者の空き時間の検索や予定の一括登録も簡単に行えます。
+                </p>
             </div>
-            <button onClick={handleLogin}>Googleアカウントでログイン</button>
+            <button 
+                onClick={handleLogin}
+                style={{
+                    backgroundColor: "#4285F4",
+                    color: "#fff",
+                    padding: "0.8rem 1.6rem",
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    border: "none",
+                    borderRadius: "0.4rem",
+                    cursor: "pointer",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                    transition: "background-color 0.2s ease"
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#357ae8")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#4285F4")}
+            >
+                Googleアカウントでログイン
+            </button>
           </div>
         );
     }
