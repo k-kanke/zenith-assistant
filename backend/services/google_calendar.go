@@ -37,7 +37,6 @@ func GetCalendarEvents(token *oauth2.Token, start, end time.Time) ([]*calendar.E
 }
 
 func CreateCalendarEvent(token *oauth2.Token, title string, start, end time.Time) error {
-	log.Println("[CreateCalendarEvent] 呼ばれた！！")
 	ctx := context.Background()
 	config := utils.GetGoogleOAuthConfig()
 	client := config.Client(ctx, token)
@@ -53,6 +52,13 @@ func CreateCalendarEvent(token *oauth2.Token, title string, start, end time.Time
 		End:     &calendar.EventDateTime{DateTime: end.Format(time.RFC3339)},
 	}
 
+	log.Println("[start]:", start)
+	log.Println("[end]:", end)
+
 	_, err = srv.Events.Insert("primary", event).Do()
+	if err != nil {
+		log.Println("[CrateCalendarEvent_Error]: ", err)
+		return err
+	}
 	return err
 }

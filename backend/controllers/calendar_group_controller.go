@@ -57,7 +57,6 @@ func GetEventsByEmail(c *gin.Context) {
 
 // 複数ユーザーに対してemailから予定を登録
 func CreateEventByEmail(c *gin.Context) {
-	// log.Println("[aaaaaaaaaaaaa]")
 	var req struct {
 		Emails []string  `json:"emails"`
 		Title  string    `json:"title"`
@@ -73,8 +72,10 @@ func CreateEventByEmail(c *gin.Context) {
 	failedList := map[string]string{}
 
 	for _, email := range req.Emails {
+		log.Println("[req]:", req)
 		token, err := services.GetValidTokenByEmail(email)
 		if err != nil {
+
 			failedList[email] = "トークンが存在しない、または有効期限切れです"
 			continue
 		}
@@ -85,14 +86,16 @@ func CreateEventByEmail(c *gin.Context) {
 			continue
 		}
 
+		log.Println("[email2]:", email)
 		successList = append(successList, email)
+		log.Println("[successList]:", successList)
 	}
 
 	log.Println("[bbbbbbbbb]")
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":    "予定の作成に成功しました",
-		"successfrl": successList,
-		"failed":     failedList,
+		"message": "予定の作成に成功しました",
+		"success": successList,
+		"failed":  failedList,
 	})
 }

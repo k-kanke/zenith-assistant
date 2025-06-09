@@ -35,9 +35,11 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
 
     const [emailsReg, setEmailsReg] = useState<string[]>([]);
 
+    const [initialized, setInitialized] = useState(false);
+
 
     useEffect(() => {
-      if (initialData) {
+      if (initialData && !initialized) {
         setTitle(initialData.title || '');
         setEmails(initialData.emails.join(', '));
         // setEmailsReg(initialData.emails);
@@ -59,8 +61,10 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
         setEndMonth(em);
         setEndDay(ed);
         setEndTime(et.slice(0, 5));
+
+        setInitialized(true);
       }
-    }, [initialData]);
+    }, [initialData, initialized]);
     
 
     const handleSubmit = async () => {
@@ -73,7 +77,8 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
 
 
         try {
-        const res = await fetch('http://localhost:8080/calendar/db/group/create', {
+          console.log("[email]: ",emailsReg)
+          const res = await fetch('http://localhost:8080/calendar/db/group/create', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -88,6 +93,9 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
         });
 
         const data = await res.json();
+        console.log("[data]: ", data)
+        console.log("[res.ok]: ", res.ok)
+        console.log("[data.ok]: ", data.ok)
 
         if (res.ok) {
             alert('予定を登録しました');
@@ -161,7 +169,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
               <input placeholder="年" value={startYear} onChange={e => setStartYear(e.target.value)} style={{ width: '5rem' }} />
               <input placeholder="月" value={startMonth} onChange={e => setStartMonth(e.target.value)} style={{ width: '3rem' }} />
               <input placeholder="日" value={startDay} onChange={e => setStartDay(e.target.value)} style={{ width: '3rem' }} />
-              <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+              <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} autoComplete="off" />
             </div>
           </div>
           
@@ -205,12 +213,13 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
               onSelect={(e) => setEmailsReg(e)} 
             />
             <div>
-              <h4 style={{ marginBottom: '0.5rem' }}>参加者</h4>
+              <h4 style={{ marginBottom: '0.8rem' }}>参加者</h4>
               <div 
                 style={{ 
                   display: 'flex', 
                   flexWrap: 'wrap', 
                   gap: '0.3rem',
+                  maxHeight: '140px'
                   }}
                 >
                 {emailsReg.map((email, idx) => (

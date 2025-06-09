@@ -200,6 +200,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                   ? calcEnd(route.date, route.start_time, route.duration)
                   : '',
             });
+            setIsLoading(false); // ローディング終了
             return setMessages(prev => [...prev, { role: 'bot', text: "予定の詳細を左側に表示しました。" }]);
 
         case 'schedule_register_direct':
@@ -228,6 +229,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 }),
                 credentials: 'include',
             });
+            setIsLoading(false); // ローディング終了
             return setMessages(prev => [...prev, { role: 'bot', text: "予定を登録しました！" }]);
 
         default:
