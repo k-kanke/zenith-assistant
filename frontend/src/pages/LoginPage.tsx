@@ -96,8 +96,8 @@ const LoginPage: React.FC = () => {
                     transition: "background-color 0.2s ease"
                 }}
                 onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = "#333333"; // ホバーで少し明るく
-                    e.currentTarget.style.transform = "translateY(-2px)"; // わずかに上に移動
+                    e.currentTarget.style.backgroundColor = "#333333"; 
+                    e.currentTarget.style.transform = "translateY(-2px)"; 
                 }}
                 onMouseOut={(e) => {
                     e.currentTarget.style.backgroundColor = "#000000";
