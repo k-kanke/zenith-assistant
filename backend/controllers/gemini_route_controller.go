@@ -29,8 +29,10 @@ func GeminiRouteHandler(c *gin.Context) {
 	}
 
 	currrentYear := time.Now().Year()
+	now := time.Now().Format("2006-01-02 15:04:05 (Monday)")
 
-	prompt := fmt.Sprintf(`現在は %d 年です。次の日本語の文章から、以下の形式でユーザーの意図と必要情報を抽出してください。
+	prompt := fmt.Sprintf(`現在は %d 年です。現在日時： %s
+	次の日本語の文章から、以下の形式でユーザーの意図と必要情報を抽出してください。
 
 必ず以下の intent 候補から1つを選んでください：
 - "free_slot_request"：空き時間を取得したい
@@ -61,7 +63,7 @@ func GeminiRouteHandler(c *gin.Context) {
 
 ユーザーの入力:
 %s
-`, currrentYear, req.Message)
+`, currrentYear, now, req.Message)
 
 	// log.Println("[Prompt]:", prompt)
 
