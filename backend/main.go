@@ -24,7 +24,7 @@ func main() {
 	services.InitFirestore()
 	r := routes.SetupRoutes()
 
-	port := os.Getenv("PORT")
+	port := os.Getenv("port")
 	if port == "" {
 		port = "8081"
 	}
