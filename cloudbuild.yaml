@@ -13,7 +13,7 @@ steps:
     args:
       - run
       - deploy
-      - your-cloud-run-service
+      - zenith-assistant
       - --image
       - asia-northeast1-docker.pkg.dev/protean-cistern-460803-q3/cloud-run-source-deploy/zenith-assistant:latest
       - --region
