@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Chat from "../components/Chat";
 import ScheduleDetailPage from "./ScheduleDetailPage";
 import ChatPage from "./ChatPage";
 import { User } from "../types/types";
