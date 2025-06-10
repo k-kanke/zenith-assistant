@@ -85,8 +85,8 @@ func GoogleCallback(c *gin.Context) {
 	log.Println("[GoogleCallback] SaveToken 成功")
 
 	// Cookieに保存してリダイレクト
-	// c.SetCookie("access_token", token.AccessToken, 3600, "/", "localhost", false, true)
-	// c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000")
+	c.SetCookie("access_token", token.AccessToken, 3600, "/", "https://zenith-assistant-229406209956.asia-northeast1.run.app", true, true)
+	c.Redirect(http.StatusTemporaryRedirect, "https://zenith-assistant-229406209956.asia-northeast1.run.app")
 }
 
 func CheckLogin(c *gin.Context) {
