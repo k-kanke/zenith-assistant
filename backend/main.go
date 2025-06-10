@@ -23,9 +23,13 @@ func main() {
 
 	services.InitFirestore()
 	r := routes.SetupRoutes()
-	log.Println("Server running on :8080")
-	e := r.Run(":8080")
-	if e != nil {
-		log.Fatal("Failed to start setver:", e)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Println("サーバー起動 :", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatal("サーバー起動失敗 :", err)
 	}
 }
