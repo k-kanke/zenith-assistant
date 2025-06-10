@@ -1,9 +1,12 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/YOUR_REPO_NAME/your-image-name:latest', '.']
+    args: ['build', '-t', 'asia-northeast1-docker.pkg.dev/protean-cistern-460803-q3/k-/your-image-name:latest', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/YOUR_REPO_NAME/your-image-name:latest']
+    args: ['push', 'asia-northeast1-docker.pkg.dev/protean-cistern-460803-q3/YOUR_REPO_NAME/your-image-name:latest']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -12,7 +15,7 @@ steps:
       - deploy
       - your-cloud-run-service
       - --image
-      - asia-northeast1-docker.pkg.dev/$PROJECT_ID/YOUR_REPO_NAME/your-image-name:latest
+      - asia-northeast1-docker.pkg.dev/protean-cistern-460803-q3/YOUR_REPO_NAME/your-image-name:latest
       - --region
       - asia-northeast1
       - --platform
