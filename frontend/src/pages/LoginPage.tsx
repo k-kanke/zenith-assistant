@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
                 const data = await res.json();
                 setLoggedIn(data.loggedIn);
             } catch (err) {
-                console.error("ログイン確認エラー", err);
+                console.log("ログイン確認エラー", err);
                 setLoggedIn(false);
             }
         };

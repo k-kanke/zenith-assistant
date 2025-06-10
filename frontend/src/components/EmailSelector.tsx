@@ -88,42 +88,6 @@ const EmailSelector: React.FC<Props> = ({ selected, onSelect }) => {
           ))}
         </ul>
       )}
-
-      {/*
-      {selectedEmails.length > 0 && (
-        <div style={{ marginTop: "1rem" }}>
-          <strong>選択中の参加者:</strong>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
-            {selectedEmails.map((email, i) => (
-              <div
-                key={i}
-                style={{
-                  background: "#f0f0f0",
-                  borderRadius: "1rem",
-                  padding: "0.4rem 0.8rem",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                {email}
-                <button
-                  onClick={() => handleRemove(email)}
-                  style={{
-                    marginLeft: "0.5rem",
-                    background: "none",
-                    border: "none",
-                    color: "#999",
-                    cursor: "pointer",
-                  }}
-                >
-                  ❌
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      */}
     </div>
   );
 };

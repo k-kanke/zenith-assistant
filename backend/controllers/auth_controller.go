@@ -14,7 +14,9 @@ import (
 	"google.golang.org/api/option"
 )
 
+// LoginPage.tsx「Googleアカウントでログイン」を押すとこれが最初に呼ばれる
 func GoogleLogin(c *gin.Context) {
+	log.Println("[GoogleLogin] 呼ばれた!")
 	config := utils.GetGoogleOAuthConfig()
 
 	url := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "consent"))
