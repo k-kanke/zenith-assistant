@@ -40,6 +40,7 @@ func InitFirestore() {
 			log.Println("[Firestore初期化]")
 		*/
 	}
+	log.Println("[InitFirestore]呼ばれた！")
 
 	app, err := firebase.NewApp(context.Background(), nil)
 	if err != nil {
