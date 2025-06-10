@@ -2,17 +2,17 @@ package controllers
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	"golang.org/x/oauth2/google"
 )
 
 type GeminiRequest struct {
@@ -20,7 +20,7 @@ type GeminiRequest struct {
 }
 
 func GeminiRouteHandler(c *gin.Context) {
-	_ = godotenv.Load()
+	// _ = godotenv.Load()
 
 	var req GeminiRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -75,24 +75,57 @@ func GeminiRouteHandler(c *gin.Context) {
 			},
 		},
 	}
-	// log.Println("[requstBody]:", requestBody)
 
 	jsonBody, _ := json.Marshal(requestBody)
-	// log.Println("[jsonBody]:", jsonBody)
 
-	apiKey := os.Getenv("GEMINI_API_KEY")
-	// log.Println("[GeminiAPI]:", apiKey)
+	// apiKey := os.Getenv("GEMINI_API_KEY")
 
-	endpoint := "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=" + apiKey
-
-	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(jsonBody))
+	// Vertex AI 用のアクセストークンを取得
+	ctx := context.Background()
+	creds, err := google.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to contact Gemini API"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get credentials"})
+		return
+	}
+
+	tokenSource := creds.TokenSource
+	token, err := tokenSource.Token()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get token"})
+		return
+	}
+
+	//endpoint := "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=" + apiKey
+
+	// Vertex AI endpoint
+	endpoint := "https://asia-northeast1-aiplatform.googleapis.com/v1/projects/" + creds.ProjectID + "/locations/asia-northeast1/publishers/google/models/gemini-1.5-pro:generateContent"
+
+	reqHttp, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "request build failed"})
+		return
+	}
+	reqHttp.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	reqHttp.Header.Set("Content-Type", "application/json")
+
+	{ /*
+			resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(jsonBody))
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to contact Gemini API"})
+				return
+			}
+			defer resp.Body.Close()
+
+			log.Println("[resp]:", resp)
+		*/
+	}
+
+	resp, err := http.DefaultClient.Do(reqHttp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "API call failed"})
 		return
 	}
 	defer resp.Body.Close()
-
-	log.Println("[resp]:", resp)
 
 	body, _ := io.ReadAll(resp.Body)
 	var result map[string]interface{}
