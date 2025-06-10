@@ -2,6 +2,8 @@ package routes
 
 import (
 	"github/k-kanke/backend/controllers"
+	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -12,13 +14,15 @@ func SetupRoutes() *gin.Engine {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			"http://localhost:3000",
+			// "http://localhost:3000",
 			"https://zenith-assistant-229406209956.asia-northeast1.run.app",
 		},
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
+
+	log.Println("[debug]:", os.Getenv("GOOGLE_REDIRECT_URL"))
 
 	api := r.Group("/api")
 	{

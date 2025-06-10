@@ -11,14 +11,14 @@ import (
 func GetGoogleOAuthConfig() *oauth2.Config {
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
-	redirectURL := os.Getenv("GOOGLE_REDIRECT_URL")
+	// redirectURL := os.Getenv("GOOGLE_REDIRECT_URL")
 
 	log.Println("[GetGoogleOAuthConfig] client_id:", clientID)
 
 	return &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		RedirectURL:  redirectURL,
+		RedirectURL:  "https://zenith-assistant-229406209956.asia-northeast1.run.app/api/auth/google/callback",
 		Scopes: []string{
 			"https://www.googleapis.com/auth/calendar",
 			"https://www.googleapis.com/auth/userinfo.email",
