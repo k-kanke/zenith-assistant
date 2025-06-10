@@ -36,7 +36,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   // Geminiで自然言語処理させる
   const routeByLLM = async (message: string) => {
     try {
-        const res = await fetch("http://localhost:8080/gemini/route", {
+        const res = await fetch("https://zenith-assistant-229406209956.asia-northeast1.run.app/api/gemini/route", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),
@@ -137,7 +137,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     query.append("end", toJstISOString(end));
 
     try {
-        const res = await fetch(`http://localhost:8080/calendar/db/group/free?${query}`, {
+        const res = await fetch(`https://zenith-assistant-229406209956.asia-northeast1.run.app/api/calendar/db/group/free?${query}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -215,7 +215,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
               return;
             }
 
-            await fetch('http://localhost:8080/calendar/db/group/create', {
+            await fetch('https://zenith-assistant-229406209956.asia-northeast1.run.app/api/calendar/db/group/create', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -444,7 +444,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
                 onClose={() => setShowPanel(false)}
                 onSubmit={async (email, nickname, affiliation) => {
                   try {
-                  const res = await fetch("http://localhost:8080/user/register", {
+                  const res = await fetch("https://zenith-assistant-229406209956.asia-northeast1.run.app/api/user/register", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ email, nickname, affiliation }),

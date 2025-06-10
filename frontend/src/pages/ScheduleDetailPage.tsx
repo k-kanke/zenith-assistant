@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import SlideInRegisterPanel from "../components/SlideInRegisterPanel";
 import EmailSelector from "../components/EmailSelector";
 
 type ScheduleData = {
@@ -78,7 +77,7 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
 
         try {
           console.log("[email]: ",emailsReg)
-          const res = await fetch('http://localhost:8080/calendar/db/group/create', {
+          const res = await fetch('https://zenith-assistant-229406209956.asia-northeast1.run.app/api/calendar/db/group/create', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
