@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
     useEffect(() => {
         const checkLogin = async () => {
             try {
-                const res = await fetch("https://zenith-assistant-229406209956.asia-northeast1.run.app/api/auth/check", {
+                const res = await fetch("/api/auth/check", {
                     method: "GET",
                     credentials: "include",
                 });

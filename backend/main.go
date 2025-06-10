@@ -28,8 +28,11 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	log.Println("サーバー起動 :", port)
+	log.Println("Goサーバー起動準備完了 :", port)
+
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("サーバー起動失敗 :", err)
 	}
+
+	log.Println("Goサーバー起動成功！")
 }
