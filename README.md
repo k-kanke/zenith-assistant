@@ -24,6 +24,7 @@ Vertex AI Gemini APIを用いた意図理解・情報抽出と、Cloud SQLによ
 <div align="center">
   <img alt="スクリーンショット 2025-06-10 17 53 32" src="https://github.com/user-attachments/assets/64cd4cdc-bd0d-4d62-83eb-ec8267e40805" width="600" />
 
-  <img alt="スクリーンショット 2025-06-13 11 13 35" src="https://github.com/user-attachments/assets/03def43a-7c88-4f05-8598-b8afc953b680" width="600" />
+  <img alt="スクリーンショット 2025-06-13 14 04 38" src="https://github.com/user-attachments/assets/8e32546f-e797-4e1f-a605-2298a52a78ab" width="600" />
 </div>
+
 
