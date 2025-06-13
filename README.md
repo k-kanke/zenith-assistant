@@ -21,3 +21,9 @@ Vertex AI Gemini APIを用いた意図理解・情報抽出と、Cloud SQLによ
 | DB | Firestore、Cloud SQL (PostgreSQL) |
 | Nginx + Docker | バックエンドとフロントエンドを一つのコンテナ内に同梱し、Nginxによってルーティングと静的ファイル提供を両立 |
 
+<div align="center">
+  <img alt="スクリーンショット 2025-06-10 17 53 32" src="https://github.com/user-attachments/assets/64cd4cdc-bd0d-4d62-83eb-ec8267e40805" width="600" />
+
+  <img alt="スクリーンショット 2025-06-13 11 13 35" src="https://github.com/user-attachments/assets/03def43a-7c88-4f05-8598-b8afc953b680" width="600" />
+</div>
+
