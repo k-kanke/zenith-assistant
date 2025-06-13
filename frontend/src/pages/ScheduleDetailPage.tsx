@@ -15,8 +15,6 @@ type Props = {
 const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     console.log("[initialData]", initialData)
     const [title, setTitle] = useState('');
-    // const [start, setStart] = useState('');
-    // const [end, setEnd] = useState('');
     const [emails, setEmails] = useState('');
     
     const [showPanel, setShowPanel] = useState(false);
@@ -41,7 +39,6 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
       if (initialData && !initialized) {
         setTitle(initialData.title || '');
         setEmails(initialData.emails.join(', '));
-        // setEmailsReg(initialData.emails);
     
         // 開始
         const start = initialData.start.replace('+09:00', '');
@@ -69,7 +66,6 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
     const handleSubmit = async () => {
         console.log("[emails]:", emailsReg)
         console.log("[]")
-        // const emailList = emails.split(',').map(e => e.trim()).filter(Boolean);
 
         const start = `${startYear}-${startMonth.padStart(2, '0')}-${startDay.padStart(2, '0')}T${startTime}:00+09:00`;
         const end = `${endYear}-${endMonth.padStart(2, '0')}-${endDay.padStart(2, '0')}T${endTime}:00+09:00`;
@@ -181,29 +177,9 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
               <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
             </div>
           </div>
-          
-          {/*
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontWeight: 600 }}>参加者メールアドレス（カンマ区切り）</label>
-            <textarea
-              value={emails}
-              onChange={(e) => setEmails(e.target.value)}
-              rows={3}
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                marginTop: '0.25rem',
-                border: '1px solid #ccc',
-                borderRadius: '0.4rem',
-                fontFamily: 'inherit'
-              }}
-            />
-          </div>
-          */}
 
           <div 
             style={{ 
-              // marginTop: '0.5rem',
               marginBottom: '1rem' 
             }}
           >
@@ -276,64 +252,6 @@ const ScheduleDetailPage: React.FC<Props> = ({ initialData }) => {
           >
             予定を登録
           </button>
-          
-          {/*
-          <img
-                src="/book.jpg" 
-                alt="Book"
-                onClick={() => setShowPanel(!showPanel)}
-                style={{
-                    position: 'fixed',
-                    bottom: '3rem',
-                    left: 'calc(25% + 1rem)',
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '10%',
-                    objectFit: 'cover',
-                    // boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                    cursor: 'pointer',
-                    backgroundColor: '#fff',
-                    padding: '6px',
-                    zIndex: 0,
-                }}
-          />
-
-          {showPanel && (
-                <div
-                    ref={panelRef}
-                    style={{
-                    position: 'fixed',
-                    bottom: '6rem',
-                    left: '3rem',
-                    width: '300px',
-                    backgroundColor: '#fff',
-                    border: '1px solid #ccc',
-                    borderRadius: '0.5rem',
-                    padding: '1rem',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                    zIndex: 999,
-                    }}
-                >
-                    <SlideInRegisterPanel
-                      onClose={() => setShowPanel(false)}
-                      onSubmit={async (email, nickname, affiliation) => {
-                        try {
-                        const res = await fetch("http://localhost:8080/user/register", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ email, nickname, affiliation }),
-                        });
-                        const data = await res.json();
-                        console.log("登録成功:", data.message);
-                        } catch (err) {
-                        console.log("登録失敗", err);
-                        }
-                      }}
-                    />
-                </div>
-            )}
-          */}
-            
         </div>
     );
 };

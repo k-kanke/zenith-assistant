@@ -16,7 +16,6 @@ const LoginPage: React.FC = () => {
         emails: string[];
     } | null>(null);
 
-    console.log("[LoginPage.tsx] 表示！")
     // Cookie内のアクセストークン確認
     useEffect(() => {
         const checkLogin = async () => {

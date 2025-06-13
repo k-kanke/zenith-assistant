@@ -80,16 +80,6 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
   ) => {
     const [year, month, day] = dateStr.split('-').map(Number);
 
-
-    //const date = new Date(`${dateStr}T00:00:00+09:00`);
-    //const start = new Date(date);
-    //const end = new Date(date);
-    //start.setHours(0, 0, 0, 0);
-    //end.setHours(23, 59, 0, 0);
-
-    // // const start = new Date(year, month - 1, day, 0, 0);
-    // // const end = new Date(year, month - 1, day, 23, 59);
-
     // 開始日時
     const startHour = startTimeStr ? Number(startTimeStr.split(':')[0]) : 0;
     const startMinute = startTimeStr ? Number(startTimeStr.split(':')[1]) : 0;
@@ -108,23 +98,6 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     } else {
       end = new Date(year, month - 1, day, 23, 59);
     }
-
-    console.log("[end]: ", end)
-    
-    
-
-    // start_time が指定されている場合
-    {/* 
-    if (startTimeStr) {
-      const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-      start.setHours(startHour, startMinute, 0, 0);
-      end.setTime(start.getTime() + 24 * 60 * 60 * 1000 - 60 * 1000);
-    }
-
-    const formatWithTZ = (d: Date) => {
-        return d.toISOString().replace('Z', '+09:00');
-    };
-    */}
 
     const toJstISOString = (date: Date) => {
       const pad = (n: number) => n.toString().padStart(2, '0');
@@ -173,10 +146,6 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setMessage('');
 
-    //let botReply = '';
-
-    // 空き時間リクエストの処理
-    //const isFreeSlotRequest = cleanedMessage.includes("空き時間");
 
     // #部署名 をメール展開
     Object.entries(departmentMap).forEach(([dep, emails]) => {
@@ -233,6 +202,7 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             return setMessages(prev => [...prev, { role: 'bot', text: "予定を登録しました！" }]);
 
         default:
+            setIsLoading(false); // ローディング終了
             return setMessages(prev => [...prev, { role: 'bot', text: 'ごめんなさい、その指示はまだ理解できません。' }]);
     }
   }
@@ -407,14 +377,12 @@ const ChatPage: React.FC<ChatProps> = ({ registeredUsers, setInitialSchedule, lo
             alt="Book"
             onClick={() => setShowPanel(!showPanel)}
             style={{
-                // position: 'relative',
                 bottom: '1rem',
                 left: 'calc(25% + 1rem)',
                 width: '35px',
                 height: '35px',
                 borderRadius: '10%',
                 objectFit: 'cover',
-                // boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                 cursor: 'pointer',
                 backgroundColor: '#fff',
                 padding: '1px',
